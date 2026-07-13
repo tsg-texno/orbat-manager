@@ -20,7 +20,7 @@ export default function MissionDetailPage() {
   const params = useParams();
   const missionId = params.id as string;
   const mission = useAppStore(s => s.missions.find(m => m.id === missionId));
-  const { addSlotGroup, removeSlotGroup, updateSlot, updateMission, fighters, specializations, vehicleTypes, vehicleAssociations } = useAppStore();
+  const { addSlotGroup, removeSlotGroup, updateSlot, updateMission, addVehicleAssociation, fighters, specializations, vehicleTypes, vehicleAssociations } = useAppStore();
 
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
@@ -116,15 +116,38 @@ export default function MissionDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {mission.slotGroups.map(group => (
             <Card key={group.id}>
-              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   {group.name}
                   <Badge variant="secondary" className="text-xs">{group.slots.length} слотов</Badge>
                 </CardTitle>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                  onClick={() => removeSlotGroup(missionId, group.id)}>
-                  ✕
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button size="sm" variant="outline" className="h-7 text-[11px] px-2"
+                    onClick={() => {
+                      let added = 0;
+                      for (const s of group.slots) {
+                        if (!s.vehicleId) continue;
+                        const exists = vehicleAssociations.some(
+                          va => va.slotPattern === s.title && va.squadPattern === group.name
+                        );
+                        if (exists) continue;
+                        addVehicleAssociation({
+                          slotPattern: s.title,
+                          squadPattern: group.name,
+                          vehicleTypeId: s.vehicleId,
+                        });
+                        added++;
+                      }
+                      if (added > 0) alert(`Сохранено ${added} ассоциаций`);
+                      else alert('Новых ассоциаций нет (либо уже есть, либо нет техники в слотах)');
+                    }}>
+                    💾 Запомнить
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    onClick={() => removeSlotGroup(missionId, group.id)}>
+                    ✕
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
