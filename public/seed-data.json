@@ -1,0 +1,551 @@
+{
+  "fighters": [
+    {
+      "id": "1783960873217-8a8aqwj",
+      "nickname": "запуск общей,,,,Общий список записанных c учётом времени,,,,Общий список записанных,,,,Члены экипажей + топ по явке с 1 в табличке,,,,Члены экипажей + топ по явке,,,,Список одобренных экипажей,,,,,,13.07.2026 14:54:39,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-4eoyzzu",
+      "nickname": "AGR",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-1bis3k2",
+      "nickname": "Bazl",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-hyn1w7w",
+      "nickname": "Darius",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-tzgxmc8",
+      "nickname": "Garvel",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-mb73aod",
+      "nickname": "Hopeless",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-56hf9xl",
+      "nickname": "Jal",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-h9l9y4c",
+      "nickname": "Lancelot",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-foe181a",
+      "nickname": "LDim",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-y46unt0",
+      "nickname": "Morpeh",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-51czukg",
+      "nickname": "Nuklid",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-t1con8o",
+      "nickname": "Remo",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-kmpfc12",
+      "nickname": "Reter",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-7ns5791",
+      "nickname": "rino",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-cmytu47",
+      "nickname": "Sami",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-9zuxnc9",
+      "nickname": "texno",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-codljy6",
+      "nickname": "Troin",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-q8x1cds",
+      "nickname": "Zulus",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-ibnybu4",
+      "nickname": "Biba",
+      "status": "active",
+      "build": "0",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-bk98xrm",
+      "nickname": "Boba",
+      "status": "active",
+      "build": "0",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-x9d7vfp",
+      "nickname": "Garazh",
+      "status": "active",
+      "build": "0",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-9mj04iq",
+      "nickname": "CblPHEK",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-a1tq2t4",
+      "nickname": "kerby",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-7lkqxoo",
+      "nickname": "Nonda",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-vczo7ps",
+      "nickname": "Silker",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-fsqmv2h",
+      "nickname": "Spectacle",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-m7tgk1j",
+      "nickname": "Yachter",
+      "status": "active",
+      "build": "Sg",
+      "attendance": 0
+    },
+    {
+      "id": "1783960873217-577dee6",
+      "nickname": "Ай, болит!",
+      "status": "active",
+      "build": "",
+      "attendance": 0
+    }
+  ],
+  "missions": [
+    {
+      "id": "1783960873217-qlnyg7a",
+      "name": "В три погибели",
+      "date": "17.07.2026",
+      "map": "Шумава",
+      "faction": "ВДВ РФ",
+      "factionType": "red",
+      "server": 3,
+      "slotGroups": []
+    },
+    {
+      "id": "1783960873217-4b27rhq",
+      "name": "Снегопад",
+      "date": "17.07.2026",
+      "map": "Напф (зима)",
+      "faction": "Мотострелковые войска РФ",
+      "factionType": "red",
+      "server": 3,
+      "slotGroups": []
+    },
+    {
+      "id": "1783960873217-w7xqd8x",
+      "name": "Цитадель",
+      "date": "17.07.2026",
+      "map": "Роше",
+      "faction": "ЧСО",
+      "factionType": "red",
+      "server": 3,
+      "slotGroups": []
+    },
+    {
+      "id": "1783960873217-70emb28",
+      "name": "Карельский бастион",
+      "date": "17.07.2026",
+      "map": "Виролахти",
+      "faction": "Морпехи США",
+      "factionType": "blue",
+      "server": 3,
+      "slotGroups": []
+    }
+  ],
+  "specializations": [
+    {
+      "id": "1783960873217-432xjts",
+      "name": "Пулемётчик",
+      "icon": "RU_PKP-Label.png",
+      "matchPatterns": [
+        "Пулеметчик",
+        "Пулемётчик"
+      ],
+      "category": "пехота",
+      "color": "#22c55e",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-f1xlm5o",
+      "name": "Гранатомётчик",
+      "icon": "RU_RPG29-Label.png",
+      "matchPatterns": [
+        "Гранатометчик",
+        "Гранатомётчик",
+        "РПГ"
+      ],
+      "category": "пехота",
+      "color": "#eab308",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-d7k4km0",
+      "name": "Снайпер",
+      "icon": "GENERIC_SNIPER-Label.png",
+      "matchPatterns": [
+        "Снайпер",
+        "Стрелок"
+      ],
+      "category": "снайпер",
+      "color": "#a855f7",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-yb7zb91",
+      "name": "Санитар",
+      "icon": "supply-Label.png",
+      "matchPatterns": [
+        "Санитар",
+        "Медик"
+      ],
+      "category": "медицина",
+      "color": "#06b6d4",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-8z8s0b6",
+      "name": "ПТРК",
+      "icon": "RU_KONKURS-Label.png",
+      "matchPatterns": [
+        "ПТРК",
+        "Конкурс",
+        "Корнет",
+        "Метис"
+      ],
+      "category": "ПТРК",
+      "color": "#f97316",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-vz5epev",
+      "name": "ПЗРК",
+      "icon": "RU_IGLA-Label.png",
+      "matchPatterns": [
+        "ПЗРК",
+        "Игла",
+        "Стрела",
+        "Игла"
+      ],
+      "category": "ПВО",
+      "color": "#3b82f6",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-tpp00jq",
+      "name": "АГС / СПГ",
+      "icon": "RU_AGS_17-Label.png",
+      "matchPatterns": [
+        "АГС",
+        "СПГ"
+      ],
+      "category": "артиллерия",
+      "color": "#ef4444",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-ypc5ci9",
+      "name": "Командир отделения",
+      "icon": "OFFICER-Label.png",
+      "matchPatterns": [
+        "Командир отделения",
+        "Ком.отд",
+        "Командир"
+      ],
+      "category": "командир",
+      "color": "#ef4444",
+      "createdBy": "system"
+    },
+    {
+      "id": "1783960873217-nyxsw7p",
+      "name": "Старший стрелок",
+      "icon": "GENERIC_RIFLEMEN-Label.png",
+      "matchPatterns": [
+        "Старший стрелок"
+      ],
+      "category": "пехота",
+      "color": "#22c55e",
+      "createdBy": "system"
+    }
+  ],
+  "vehicleTypes": [
+    {
+      "id": "1783960873217-2gzj4v3",
+      "name": "БТР-82А",
+      "model": "БТР-82А",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTR82-Label.png",
+      "matchPatterns": [
+        "БТР-82А",
+        "БТР-82"
+      ]
+    },
+    {
+      "id": "1783960873217-zj77ar7",
+      "name": "БТР-80",
+      "model": "БТР-80",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTR80-Label.png",
+      "matchPatterns": [
+        "БТР-80"
+      ]
+    },
+    {
+      "id": "1783960873217-8obc2yv",
+      "name": "Т-90М",
+      "model": "Т-90М",
+      "faction": "ru",
+      "category": "Танк",
+      "icon": "RU_T90M-Label.png",
+      "matchPatterns": [
+        "Т-90М",
+        "Т-90"
+      ]
+    },
+    {
+      "id": "1783960873217-pfxiqg5",
+      "name": "Т-72Б",
+      "model": "Т-72Б",
+      "faction": "ru",
+      "category": "Танк",
+      "icon": "RU_T72B-Label.png",
+      "matchPatterns": [
+        "Т-72Б",
+        "Т-72"
+      ]
+    },
+    {
+      "id": "1783960873217-1ua0s8i",
+      "name": "БМД-4",
+      "model": "БМД-4",
+      "faction": "ru",
+      "category": "БМД",
+      "icon": "RU_BMD_4-Label.png",
+      "matchPatterns": [
+        "БМД-4",
+        "БМД4"
+      ]
+    },
+    {
+      "id": "1783960873217-pk027a1",
+      "name": "БМД-2",
+      "model": "БМД-2",
+      "faction": "ru",
+      "category": "БМД",
+      "icon": "RU_BMD_2-Label.png",
+      "matchPatterns": [
+        "БМД-2",
+        "БМД2"
+      ]
+    },
+    {
+      "id": "1783960873217-gdqs06w",
+      "name": "БМП-2",
+      "model": "БМП-2",
+      "faction": "ru",
+      "category": "БМП",
+      "icon": "RU_BMP2-Label.png",
+      "matchPatterns": [
+        "БМП-2",
+        "БМП2"
+      ]
+    },
+    {
+      "id": "1783960873217-yf8gnzu",
+      "name": "БМП-3",
+      "model": "БМП-3",
+      "faction": "ru",
+      "category": "БМП",
+      "icon": "RU_BMP3-Label.png",
+      "matchPatterns": [
+        "БМП-3",
+        "БМП3"
+      ]
+    },
+    {
+      "id": "1783960873217-bqy8ek4",
+      "name": "Ка-52",
+      "model": "Ка-52",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_KA52-Label.png",
+      "matchPatterns": [
+        "Ка-52",
+        "КА-52"
+      ]
+    },
+    {
+      "id": "1783960873217-w6ooxq9",
+      "name": "Ми-8",
+      "model": "Ми-8",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_MI8_AMTSH-Label.png",
+      "matchPatterns": [
+        "Ми-8",
+        "МИ-8"
+      ]
+    },
+    {
+      "id": "1783960873217-7g70qbf",
+      "name": "Т-14 Армата",
+      "model": "Т-14",
+      "faction": "ru",
+      "category": "Танк",
+      "icon": "RU_T14-Label.png",
+      "matchPatterns": [
+        "Т-14",
+        "Армата"
+      ]
+    },
+    {
+      "id": "1783960873217-9a9jiog",
+      "name": "Панцирь-С1",
+      "model": "Панцирь-С1",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_PANTSIR-Label.png",
+      "matchPatterns": [
+        "Панцирь",
+        "Панцирь-С1"
+      ]
+    },
+    {
+      "id": "1783960873217-n4id9ns",
+      "name": "Тор-М2",
+      "model": "Тор-М2",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_TOR-Label.png",
+      "matchPatterns": [
+        "Тор",
+        "Тор-М2"
+      ]
+    },
+    {
+      "id": "1783960873217-wfhncr8",
+      "name": "Мста-С",
+      "model": "Мста-С",
+      "faction": "ru",
+      "category": "Артиллерия",
+      "icon": "RU_MSTA-Label.png",
+      "matchPatterns": [
+        "Мста",
+        "Мста-С"
+      ]
+    },
+    {
+      "id": "1783960873217-cjqpqus",
+      "name": "Ураган",
+      "model": "Ураган",
+      "faction": "ru",
+      "category": "Артиллерия",
+      "icon": "RU_URAGAN_1M-Label.png",
+      "matchPatterns": [
+        "Ураган",
+        "БМ-27"
+      ]
+    },
+    {
+      "id": "1783960873217-vzu7qxo",
+      "name": "ТОС-1",
+      "model": "ТОС-1",
+      "faction": "ru",
+      "category": "Артиллерия",
+      "icon": "RU_TOS-Label.png",
+      "matchPatterns": [
+        "ТОС",
+        "Солнцепек"
+      ]
+    }
+  ],
+  "vehicleAssociations": []
+}
