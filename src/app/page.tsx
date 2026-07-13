@@ -1,10 +1,15 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/appStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useSeedLoader } from '@/lib/seedLoader';
+
+interface SheetMission {
+  date: string; squad: string; name: string; status: string;
+  side: string; ourFaction: string;
+}
 
 export default function DashboardPage() {
   const missions = useAppStore(s => s.missions);
@@ -13,6 +18,14 @@ export default function DashboardPage() {
   useEffect(() => { loadSeed(); }, []);
   const fighters = useAppStore(s => s.fighters);
   const pendingDeltas = useAppStore(s => s.pendingDeltas);
+
+  const [upcoming, setUpcoming] = useState<SheetMission[]>([]);
+
+  useEffect(() => {
+    fetch('/api/sheet/missions').then(r => r.json()).then(d => {
+      if (d.missions) setUpcoming(d.missions);
+    }).catch(() => {});
+  }, []);
 
   const totalSlots = missions.reduce((acc, m) =>
     acc + m.slotGroups.reduce((sgAcc, sg) => sgAcc + sg.slots.length, 0), 0);
@@ -84,6 +97,20 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
+        {upcoming.length > 0 && (
+          <Card>
+            <CardHeader><CardTitle>🗓 Ближайшие миссии (из таблицы)</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              {upcoming.map((m, i) => (
+                <div key={i} className="p-3 rounded-lg border text-sm">
+                  <p className="font-medium">{m.name}</p>
+                  <p className="text-muted-foreground">{m.date} — {m.squad} — {m.side === 'Красные' ? '🔴' : '🔵'} {m.ourFaction}</p>
+                </div>
+              ))}
+              <Link href="/missions"><Button size="sm" variant="outline" className="w-full mt-2">Импортировать</Button></Link>
+            </CardContent>
+          </Card>
+        )}
         <Card>
           <CardHeader><CardTitle>Быстрые действия</CardTitle></CardHeader>
           <CardContent className="space-y-3">

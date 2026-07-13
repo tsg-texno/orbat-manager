@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/appStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+
+interface SheetMission {
+  date: string; squad: string; name: string; status: string;
+  side: string; ourFaction: string; ourSlots: string;
+  opponentFaction: string; opponentSlots: string;
+}
 
 export default function MissionsPage() {
   const { missions, addMission, deleteMission } = useAppStore();
@@ -18,6 +25,41 @@ export default function MissionsPage() {
   const [faction, setFaction] = useState('ВДВ РФ');
   const [factionType, setFactionType] = useState<'red' | 'blue'>('red');
   const [server, setServer] = useState(3);
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetMissions, setSheetMissions] = useState<SheetMission[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(false);
+
+  const loadSheet = async () => {
+    setLoading(true);
+    try {
+      const resp = await fetch('/api/sheet/missions');
+      const data = await resp.json();
+      setSheetMissions(data.missions || []);
+      setSelected(new Set(data.missions.map((_: unknown, i: number) => i)));
+    } catch { setSheetMissions([]); }
+    setLoading(false);
+  };
+
+  const importSelected = () => {
+    sheetMissions.forEach((m, i) => {
+      if (!selected.has(i)) return;
+      const dt = m.date.match(/^(\d{2})\.(\d{2})\.(\d{2})/);
+      const dateStr = dt ? `${dt[1]}.${dt[2]}.20${dt[3]}` : m.date;
+      addMission({
+        name: m.name,
+        date: dateStr,
+        map: m.name,
+        faction: m.squad,
+        factionType: m.side === 'Красные' ? 'red' : 'blue',
+        server: 1,
+        slotGroups: [],
+        syncRoomKey: `sheet-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      });
+    });
+    setSheetOpen(false);
+  };
 
   const handleCreate = () => {
     if (!name.trim()) return;
@@ -40,6 +82,9 @@ export default function MissionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Миссии</h1>
         <Dialog open={open} onOpenChange={setOpen}>
+          <Button variant="outline" onClick={() => { setSheetOpen(true); loadSheet(); }}>
+            📊 Из гугл-таблицы
+          </Button>
           <DialogTrigger>+ Новая миссия</DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Создать миссию</DialogTitle></DialogHeader>
@@ -111,6 +156,43 @@ export default function MissionsPage() {
           ))}
         </div>
       )}
+      <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Миссии из таблицы</DialogTitle></DialogHeader>
+          {loading ? (
+            <p className="text-center py-8 text-muted-foreground">Загрузка...</p>
+          ) : sheetMissions.length === 0 ? (
+            <p className="text-center py-8 text-muted-foreground">Нет ближайших миссий на пятницу/субботу</p>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Найдено на ближайшие пятницу и субботу:
+              </p>
+              {sheetMissions.map((m, i) => (
+                <label key={i} className="flex items-start gap-3 p-3 rounded-lg border cursor-pointer hover:bg-accent">
+                  <Checkbox
+                    checked={selected.has(i)}
+                    onCheckedChange={() => {
+                      const next = new Set(selected);
+                      next.has(i) ? next.delete(i) : next.add(i);
+                      setSelected(next);
+                    }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium">{m.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {m.date} — {m.squad} — {m.side === 'Красные' ? '🔴' : '🔵'} {m.ourFaction}
+                    </p>
+                  </div>
+                </label>
+              ))}
+              <Button onClick={importSelected} className="w-full" disabled={selected.size === 0}>
+                Импортировать ({selected.size})
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
