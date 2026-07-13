@@ -103,7 +103,7 @@ export default function DashboardPage() {
                       <div className="flex flex-wrap gap-1.5">
                         {specs.map((sp, i) => (
                           <Badge key={i} variant="secondary" className="text-xs px-1.5 py-0.5 gap-1">
-                            {sp.icon && <img src={sp.icon} alt="" className="w-4 h-4" />}
+                            {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-4 h-4" />}
                             {sp.name}
                             <span className="text-muted-foreground ml-0.5">×{sp.count}</span>
                           </Badge>

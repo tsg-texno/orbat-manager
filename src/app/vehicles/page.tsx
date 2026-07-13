@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { IconPicker } from '@/components/specializations/IconPicker';
 import { getAllIcons, getCategories } from '@/lib/vehicleIcons';
+import type { VehicleAssociation, VehicleType } from '@/lib/types';
 
 export default function VehiclesPage() {
   const { vehicleTypes, addVehicleType, updateVehicleType, deleteVehicleType, vehicleAssociations, addVehicleAssociation, removeVehicleAssociation } = useAppStore();
@@ -197,40 +198,82 @@ export default function VehiclesPage() {
             </Dialog>
           </div>
 
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Паттерн слота</TableHead>
-                    <TableHead>Паттерн отделения</TableHead>
-                    <TableHead>Зависит от слотов</TableHead>
-                    <TableHead>Техника</TableHead>
-                    <TableHead>Действия</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {vehicleAssociations.length === 0 ? (
-                    <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Нет ассоциаций</TableCell></TableRow>
-                  ) : vehicleAssociations.map(va => (
-                    <TableRow key={va.id}>
-                      <TableCell><code className="text-xs bg-muted px-1 rounded">{va.slotPattern}</code></TableCell>
-                      <TableCell><code className="text-xs bg-muted px-1 rounded">{va.squadPattern || '—'}</code></TableCell>
-                      <TableCell>
-                        {va.dependsOnSlots?.length ? va.dependsOnSlots.map(d => (
-                          <Badge key={d} variant="outline" className="text-xs mr-1">{d}</Badge>
-                        )) : '—'}
-                      </TableCell>
-                      <TableCell>{vehicleTypes.find(vt => vt.id === va.vehicleTypeId)?.name || '—'}</TableCell>
-                      <TableCell><Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive">🗑</Button></TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          {(() => {
+            const grouped = new Map<string, typeof vehicleAssociations>();
+            for (const va of vehicleAssociations) {
+              const vt = vehicleTypes.find(v => v.id === va.vehicleTypeId);
+              const key = vt?.name || 'Без техники';
+              if (!grouped.has(key)) grouped.set(key, []);
+              grouped.get(key)!.push(va);
+            }
+            const entries = Array.from(grouped.entries());
+            return entries.length === 0 ? (
+              <Card><CardContent className="py-8 text-center text-muted-foreground">Нет ассоциаций</CardContent></Card>
+            ) : entries.map(([vtName, vas]) => (
+              <AssocGroup key={vtName} vtName={vtName} vas={vas} vehicleTypes={vehicleTypes} removeVehicleAssociation={removeVehicleAssociation} />
+            ));
+          })()}
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation }: {
+  vtName: string;
+  vas: VehicleAssociation[];
+  vehicleTypes: VehicleType[];
+  removeVehicleAssociation: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(true);
+  const vt = vehicleTypes.find(v => v.name === vtName);
+  return (
+    <Card>
+      <CardHeader className="pb-2 cursor-pointer select-none" onClick={() => setOpen(!open)}>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm flex items-center gap-2">
+            {vt?.icon && <img src={`/icons/${vt.icon}`} alt="" className="w-5 h-5" />}
+            {vtName}
+            <Badge variant="secondary" className="text-xs">{vas.length}</Badge>
+          </CardTitle>
+          <span className="text-muted-foreground text-sm">{open ? '▲' : '▼'}</span>
+        </div>
+      </CardHeader>
+      {open && (
+        <CardContent className="pt-0">
+          <div className="divide-y">
+            {vas.map(va => {
+              const v = vehicleTypes.find(vt => vt.id === va.vehicleTypeId);
+              return (
+                <div key={va.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <div className="flex-1 min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <code className="text-xs bg-muted px-1 rounded">{va.slotPattern}</code>
+                      {va.squadPattern && (
+                        <><span className="text-muted-foreground text-[10px]">в</span><code className="text-xs bg-muted px-1 rounded">{va.squadPattern}</code></>
+                      )}
+                    </div>
+                    {va.dependsOnSlots?.length ? (
+                      <div className="flex gap-1 flex-wrap">
+                        {va.dependsOnSlots.map(d => (
+                          <Badge key={d} variant="outline" className="text-[10px] px-1">⬆ {d}</Badge>
+                        ))}
+                      </div>
+                    ) : null}
+                    {v && (
+                      <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                        {v.icon && <img src={`/icons/${v.icon}`} alt="" className="w-3.5 h-3.5" />}
+                        {v.name} · {v.model}
+                      </div>
+                    )}
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0">🗑</Button>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      )}
+    </Card>
   );
 }
