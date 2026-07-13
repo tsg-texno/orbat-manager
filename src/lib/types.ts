@@ -66,6 +66,7 @@ export interface Slot {
   title: string;
   specializationId?: string;
   vehicleId?: string;
+  vehicleManuallySet?: boolean;
   status: SlotStatus;
   occupiedBy?: string;
   occupiedByUserId?: string;
@@ -98,6 +99,7 @@ export interface VehicleAssociation {
   slotPattern: string;
   vehicleTypeId: string;
   squadPattern?: string;
+  dependsOnSlots?: string[];
 }
 
 export interface SyncDelta {

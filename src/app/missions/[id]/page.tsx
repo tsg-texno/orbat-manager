@@ -29,10 +29,24 @@ export default function MissionDetailPage() {
     const parsed = parseSlotText(pasteText);
     if (!parsed) return;
     const withSpecs = autoAssignSpecializations(parsed.slots, specializations);
+    // Only auto-assign vehicles for slots not manually set
     const withVehicles = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name);
     addSlotGroup(missionId, { ...parsed, slots: withVehicles });
     setPasteText('');
     setPasteOpen(false);
+  };
+
+  const reapplyVehicles = () => {
+    if (!mission) return;
+    for (const group of mission.slotGroups) {
+      for (const slot of group.slots) {
+        if (slot.vehicleManuallySet) continue;
+        const assigned = autoAssignVehicles([slot], vehicleAssociations, group.name);
+        if (assigned[0].vehicleId !== slot.vehicleId) {
+          updateSlot(missionId, group.id, slot.id, { vehicleId: assigned[0].vehicleId });
+        }
+      }
+    }
   };
 
   const allSlots = useMemo(() =>
@@ -43,10 +57,6 @@ export default function MissionDetailPage() {
   const available = allSlots.filter(s => s.status === 'available').length;
   const reserve = allSlots.filter(s => s.status === 'reserve').length;
   const occupied = allSlots.filter(s => s.status === 'occupied_by_others').length;
-
-  const getSpecName = (id?: string) => specializations.find(s => s.id === id)?.name;
-  const getVehicleName = (id?: string) => vehicleTypes.find(v => v.id === id)?.name;
-  const getVehicleIcon = (id?: string) => vehicleTypes.find(v => v.id === id)?.icon;
 
   if (!mission) return (
     <div className="text-center py-12">
@@ -72,6 +82,9 @@ export default function MissionDetailPage() {
             <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500">🟡 {reserve}</Badge>
             <Badge variant="outline" className="bg-gray-500/10 text-gray-500">⚫ {occupied}</Badge>
           </div>
+          <Button variant="outline" size="sm" onClick={reapplyVehicles} title="Переприменить ассоциации техники">
+            🔄 Техника
+          </Button>
           <Dialog open={pasteOpen} onOpenChange={setPasteOpen}>
             <DialogTrigger>📋 Вставить расстановку</DialogTrigger>
             <DialogContent className="max-w-xl">
@@ -123,9 +136,7 @@ export default function MissionDetailPage() {
                       groupId={group.id}
                       fighters={fighters}
                       specializations={specializations}
-                      getSpecName={getSpecName}
-                      getVehicleName={getVehicleName}
-                      getVehicleIcon={getVehicleIcon}
+                      vehicleTypes={vehicleTypes}
                     />
                   ))}
                 </div>

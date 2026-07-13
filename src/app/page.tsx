@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/appStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 import { useSeedLoader } from '@/lib/seedLoader';
 
@@ -13,11 +15,11 @@ interface SheetMission {
 
 export default function DashboardPage() {
   const missions = useAppStore(s => s.missions);
+  const specializations = useAppStore(s => s.specializations);
+  const fighters = useAppStore(s => s.fighters);
   const { loadSeed } = useSeedLoader();
 
   useEffect(() => { loadSeed(); }, []);
-  const fighters = useAppStore(s => s.fighters);
-  const pendingDeltas = useAppStore(s => s.pendingDeltas);
 
   const [upcoming, setUpcoming] = useState<SheetMission[]>([]);
 
@@ -33,20 +35,30 @@ export default function DashboardPage() {
     acc + m.slotGroups.reduce((sgAcc, sg) =>
       sgAcc + sg.slots.filter(s => s.status === 'taken_by_us').length, 0), 0);
 
+  const missionSpecStats = missions.map(m => {
+    const allSlots = m.slotGroups.flatMap(g => g.slots);
+    const specCounts = new Map<string, { name: string; icon: string; count: number }>();
+    let noSpec = 0;
+    for (const s of allSlots) {
+      if (s.specializationId) {
+        const sp = specializations.find(sp => sp.id === s.specializationId);
+        const key = s.specializationId;
+        const prev = specCounts.get(key) || { name: sp?.name || '?', icon: sp?.icon || '', count: 0 };
+        specCounts.set(key, { ...prev, count: prev.count + 1 });
+      } else {
+        noSpec++;
+      }
+    }
+    return { mission: m, specs: Array.from(specCounts.values()), noSpec };
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Дашборд</h1>
-        <div className="flex gap-2">
-          {pendingDeltas.length > 0 && (
-            <span className="text-sm text-yellow-500">
-              ⏳ {pendingDeltas.length} несинхронизированных изменений
-            </span>
-          )}
-        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Миссии</CardTitle></CardHeader>
           <CardContent><p className="text-3xl font-bold">{missions.length}</p></CardContent>
@@ -71,28 +83,41 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
-          <CardHeader><CardTitle>Последние миссии</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Миссии — состав слотов</CardTitle></CardHeader>
           <CardContent>
             {missions.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                <p className="mb-4">Нет миссий. Создайте первую миссию.</p>
+                <p className="mb-4">Нет миссий. Создайте первую.</p>
                 <Link href="/missions"><Button>Создать миссию</Button></Link>
               </div>
             ) : (
-              <div className="space-y-2">
-                {missions.map(m => (
-                  <Link key={m.id} href={`/missions/${m.id}`}
-                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors">
-                    <div>
-                      <p className="font-medium">{m.name}</p>
-                      <p className="text-sm text-muted-foreground">{m.date} — {m.map}</p>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {m.slotGroups.length} групп(ы)
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <ScrollArea className="max-h-[400px]">
+                <div className="space-y-3">
+                  {missionSpecStats.map(({ mission: m, specs, noSpec }) => (
+                    <Link key={m.id} href={`/missions/${m.id}`}
+                      className="block p-3 rounded-lg border hover:bg-accent transition-colors">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <p className="font-medium">{m.name}</p>
+                        <span className="text-xs text-muted-foreground">{m.date}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {specs.map((sp, i) => (
+                          <Badge key={i} variant="secondary" className="text-xs px-1.5 py-0.5 gap-1">
+                            {sp.icon && <img src={sp.icon} alt="" className="w-4 h-4" />}
+                            {sp.name}
+                            <span className="text-muted-foreground ml-0.5">×{sp.count}</span>
+                          </Badge>
+                        ))}
+                        {noSpec > 0 && (
+                          <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                            ? ×{noSpec}
+                          </Badge>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </ScrollArea>
             )}
           </CardContent>
         </Card>
@@ -111,6 +136,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         )}
+
         <Card>
           <CardHeader><CardTitle>Быстрые действия</CardTitle></CardHeader>
           <CardContent className="space-y-3">

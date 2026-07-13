@@ -65,18 +65,30 @@ export function autoAssignSpecializations(
 
 export function autoAssignVehicles(
   slots: Slot[],
-  associations: { id: string; slotPattern: string; vehicleTypeId: string; squadPattern?: string }[],
-  squadName?: string
+  associations: { id: string; slotPattern: string; vehicleTypeId: string; squadPattern?: string; dependsOnSlots?: string[] }[],
+  squadName?: string,
+  allSlots?: Slot[]
 ): Slot[] {
-  return slots.map(slot => {
+  return slots.map((slot, idx) => {
+    if (slot.vehicleManuallySet) return slot;
     const match = associations.find(va => {
       try {
         const slotMatch = new RegExp(va.slotPattern, 'i').test(slot.title);
+        if (!slotMatch) return false;
         let squadMatch = true;
         if (va.squadPattern && squadName) {
           squadMatch = new RegExp(va.squadPattern, 'i').test(squadName);
         }
-        return slotMatch && squadMatch;
+        if (!squadMatch) return false;
+        if (va.dependsOnSlots && va.dependsOnSlots.length > 0) {
+          const deps = allSlots || slots;
+          const allDepMatch = va.dependsOnSlots.every(dp => {
+            try { return deps.some(s => new RegExp(dp, 'i').test(s.title)); }
+            catch { return deps.some(s => s.title.toLowerCase().includes(dp.toLowerCase())); }
+          });
+          if (!allDepMatch) return false;
+        }
+        return true;
       } catch {
         return slot.title.toLowerCase().includes(va.slotPattern.toLowerCase());
       }

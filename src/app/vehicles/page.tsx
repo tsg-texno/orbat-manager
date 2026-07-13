@@ -28,6 +28,7 @@ export default function VehiclesPage() {
   const [assocOpen, setAssocOpen] = useState(false);
   const [assocSlotPattern, setAssocSlotPattern] = useState('');
   const [assocSquadPattern, setAssocSquadPattern] = useState('');
+  const [assocDependsOn, setAssocDependsOn] = useState('');
   const [assocVehicleId, setAssocVehicleId] = useState('');
 
   const resetVt = () => {
@@ -49,49 +50,54 @@ export default function VehiclesPage() {
     resetVt(); setVtOpen(false);
   };
 
+  const resetAssoc = () => {
+    setAssocSlotPattern(''); setAssocSquadPattern(''); setAssocDependsOn(''); setAssocVehicleId(''); setAssocOpen(false);
+  };
+
   const handleAssocAdd = () => {
     if (!assocSlotPattern.trim() || !assocVehicleId) return;
-    addVehicleAssociation({ slotPattern: assocSlotPattern, vehicleTypeId: assocVehicleId, squadPattern: assocSquadPattern || undefined });
-    setAssocSlotPattern(''); setAssocSquadPattern(''); setAssocVehicleId(''); setAssocOpen(false);
+    addVehicleAssociation({
+      slotPattern: assocSlotPattern.trim(),
+      squadPattern: assocSquadPattern.trim() || undefined,
+      dependsOnSlots: assocDependsOn.trim() ? assocDependsOn.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+      vehicleTypeId: assocVehicleId,
+    });
+    resetAssoc();
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Техника и ассоциации</h1>
+      <h1 className="text-2xl font-bold">🛠 Техника</h1>
 
       <Tabs defaultValue="types">
-        <TabsList>
+        <TabsList className="mb-4">
           <TabsTrigger value="types">Типы техники</TabsTrigger>
           <TabsTrigger value="associations">Ассоциации</TabsTrigger>
         </TabsList>
 
         <TabsContent value="types" className="space-y-4 mt-4">
           <div className="flex justify-end">
-            <Dialog open={vtOpen} onOpenChange={(v) => { if (!v) resetVt(); setVtOpen(v); }}>
-              <DialogTrigger onClick={() => resetVt()}>+ Тип техники</DialogTrigger>
+            <Dialog open={vtOpen} onOpenChange={(o) => { if (!o) resetVt(); setVtOpen(o); }}>
+              <Button variant="default" onClick={() => setVtOpen(true)}>+ Тип техники</Button>
               <DialogContent>
-                <DialogHeader><DialogTitle>{vtEditId ? 'Редактировать' : 'Добавить'} тип техники</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{vtEditId ? 'Редактировать' : 'Новый'} тип техники</DialogTitle></DialogHeader>
                 <div className="space-y-4">
                   <div><Label>Название</Label><Input value={vtName} onChange={e => setVtName(e.target.value)} placeholder="БТР-82А" /></div>
                   <div><Label>Модель</Label><Input value={vtModel} onChange={e => setVtModel(e.target.value)} placeholder="БТР-82А" /></div>
                   <div className="grid grid-cols-2 gap-4">
                     <div><Label>Фракция</Label>
                       <select className="w-full rounded-md border p-2 bg-background" value={vtFaction} onChange={e => setVtFaction(e.target.value as 'ru' | 'us' | 'generic')}>
-                        <option value="ru">🇷🇺 Россия</option>
-                        <option value="us">🇺🇸 США</option>
-                        <option value="generic">⚙️ Общая</option>
+                        <option value="ru">🇷🇺 РФ</option><option value="us">🇺🇸 США</option><option value="generic">⚙️ Общее</option>
                       </select>
                     </div>
                     <div><Label>Категория</Label>
                       <select className="w-full rounded-md border p-2 bg-background" value={vtCategory} onChange={e => setVtCategory(e.target.value)}>
-                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                        {categories.map(c => (<option key={c} value={c}>{c}</option>))}
                       </select>
                     </div>
                   </div>
-                  <div><Label>Иконка</Label>
-                    <IconPicker value={vtIcon} onChange={setVtIcon} icons={allIcons.filter(i => i.faction === vtFaction || vtFaction === 'generic' || i.faction === 'generic')} />
-                  </div>
-                  <Button onClick={handleVtSave} className="w-full">Сохранить</Button>
+                  <div><Label>Иконка</Label><IconPicker value={vtIcon} onChange={setVtIcon} icons={allIcons} /></div>
+                  <Button onClick={handleVtSave} className="w-full">{vtEditId ? 'Сохранить' : 'Добавить'}</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -162,8 +168,8 @@ export default function VehiclesPage() {
 
         <TabsContent value="associations" className="space-y-4 mt-4">
           <div className="flex justify-end">
-            <Dialog open={assocOpen} onOpenChange={setAssocOpen}>
-              <DialogTrigger>+ Ассоциация</DialogTrigger>
+            <Dialog open={assocOpen} onOpenChange={(o) => { if (!o) resetAssoc(); setAssocOpen(o); }}>
+              <Button variant="default" onClick={() => setAssocOpen(true)}>+ Ассоциация</Button>
               <DialogContent>
                 <DialogHeader><DialogTitle>Новая ассоциация</DialogTitle></DialogHeader>
                 <div className="space-y-4">
@@ -172,6 +178,10 @@ export default function VehiclesPage() {
                   </div>
                   <div><Label>Паттерн названия отделения (regex, опц.)</Label>
                     <Input value={assocSquadPattern} onChange={e => setAssocSquadPattern(e.target.value)} placeholder="Alpha-2-\d+" />
+                  </div>
+                  <div><Label>Зависит от слотов (через запятую, опц.)</Label>
+                    <Input value={assocDependsOn} onChange={e => setAssocDependsOn(e.target.value)} placeholder="Командир отделения, Старший стрелок" />
+                    <p className="text-xs text-muted-foreground mt-1">Ассоциация сработает, только если в отделении есть эти слоты</p>
                   </div>
                   <div><Label>Тип техники</Label>
                     <select className="w-full rounded-md border p-2 bg-background" value={assocVehicleId} onChange={e => setAssocVehicleId(e.target.value)}>
@@ -194,17 +204,23 @@ export default function VehiclesPage() {
                   <TableRow>
                     <TableHead>Паттерн слота</TableHead>
                     <TableHead>Паттерн отделения</TableHead>
+                    <TableHead>Зависит от слотов</TableHead>
                     <TableHead>Техника</TableHead>
                     <TableHead>Действия</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {vehicleAssociations.length === 0 ? (
-                    <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">Нет ассоциаций</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Нет ассоциаций</TableCell></TableRow>
                   ) : vehicleAssociations.map(va => (
                     <TableRow key={va.id}>
                       <TableCell><code className="text-xs bg-muted px-1 rounded">{va.slotPattern}</code></TableCell>
                       <TableCell><code className="text-xs bg-muted px-1 rounded">{va.squadPattern || '—'}</code></TableCell>
+                      <TableCell>
+                        {va.dependsOnSlots?.length ? va.dependsOnSlots.map(d => (
+                          <Badge key={d} variant="outline" className="text-xs mr-1">{d}</Badge>
+                        )) : '—'}
+                      </TableCell>
                       <TableCell>{vehicleTypes.find(vt => vt.id === va.vehicleTypeId)?.name || '—'}</TableCell>
                       <TableCell><Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive">🗑</Button></TableCell>
                     </TableRow>

@@ -21,24 +21,24 @@ export function Header() {
 
   return (
     <header className="border-b bg-card sticky top-0 z-50">
-      <div className="flex items-center justify-between px-4 h-14">
-        <div className="flex items-center gap-1">
-          <Link href="/" className="font-bold text-lg mr-4 text-foreground">
+      <div className="flex items-center justify-between px-5 h-16">
+        <div className="flex items-center gap-2">
+          <Link href="/" className="font-bold text-xl mr-5 text-foreground">
             ORBAT<span className="text-primary">Manager</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-0.5">
+          <nav className="hidden md:flex items-center gap-1">
             {navItems.map(item => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'px-3 py-1.5 rounded-md text-sm transition-colors',
+                  'px-3.5 py-2 rounded-lg text-sm transition-colors',
                   pathname === item.href
                     ? 'bg-primary/10 text-primary font-medium'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 )}
               >
-                <span className="mr-1">{item.icon}</span>
+                <span className="mr-1.5 text-base">{item.icon}</span>
                 {item.label}
               </Link>
             ))}

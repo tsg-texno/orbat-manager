@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <TooltipProvider>
       <Header />
-      <main className="flex-1 p-4 md:p-6">{children}</main>
+      <main className="flex-1 p-5 md:p-7">{children}</main>
     </TooltipProvider>
   );
 }
