@@ -31,13 +31,20 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function RosterPage() {
-  const { fighters, setFighters, roles, assignUserToFighter } = useAppStore();
+  const { fighters, setFighters, roles } = useAppStore();
   const [search, setSearch] = useState('');
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newStatus, setNewStatus] = useState<Fighter['status']>('active');
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editStatus, setEditStatus] = useState<Fighter['status']>('active');
+  const [editBuild, setEditBuild] = useState('');
+  const [editAttendance, setEditAttendance] = useState('');
 
   const filtered = fighters.filter(f =>
     f.nickname.toLowerCase().includes(search.toLowerCase())
@@ -88,6 +95,36 @@ export default function RosterPage() {
     setFighters([...fighters, f]);
     setNewName('');
     setAddOpen(false);
+  };
+
+  const openEdit = (f: Fighter) => {
+    setEditId(f.id);
+    setEditName(f.nickname);
+    setEditStatus(f.status);
+    setEditBuild(f.build);
+    setEditAttendance(String(f.attendance));
+    setEditOpen(true);
+  };
+
+  const handleEditSave = () => {
+    if (!editId || !editName.trim()) return;
+    setFighters(fighters.map(f =>
+      f.id === editId ? {
+        ...f,
+        nickname: editName.trim(),
+        status: editStatus,
+        build: editBuild,
+        attendance: parseFloat(editAttendance) || 0,
+      } : f
+    ));
+    setEditOpen(false);
+    setEditId(null);
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('Удалить бойца?')) {
+      setFighters(fighters.filter(f => f.id !== id));
+    }
   };
 
   return (
@@ -141,7 +178,7 @@ export default function RosterPage() {
                 <TableHead>Статус</TableHead>
                 <TableHead>Build</TableHead>
                 <TableHead>Явка</TableHead>
-                <TableHead>Пользователь</TableHead>
+                <TableHead>Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -155,8 +192,11 @@ export default function RosterPage() {
                   </TableCell>
                   <TableCell>{f.build || '—'}</TableCell>
                   <TableCell>{f.attendance}%</TableCell>
-                  <TableCell className="text-muted-foreground text-xs">
-                    {f.userId ? roles.find(r => fighters.find(ff => ff.userId === f.userId)?.id)?.name || 'Связан' : '—'}
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => openEdit(f)}>✏️</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(f.id)} className="text-destructive">🗑</Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -164,6 +204,34 @@ export default function RosterPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={editOpen} onOpenChange={(o) => { if (!o) setEditId(null); setEditOpen(o); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Редактировать бойца</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div><Label>Позывной</Label>
+              <Input value={editName} onChange={e => setEditName(e.target.value)} />
+            </div>
+            <div><Label>Статус</Label>
+              <select className="w-full rounded-md border p-2 bg-background" value={editStatus} onChange={e => setEditStatus(e.target.value as Fighter['status'])}>
+                <option value="active">В строю</option>
+                <option value="reserve">В запасе</option>
+                <option value="missing">Пропал</option>
+                <option value="rare">Редкостное</option>
+                <option value="break">Перерыв</option>
+                <option value="cadet">Курсант</option>
+              </select>
+            </div>
+            <div><Label>Build</Label>
+              <Input value={editBuild} onChange={e => setEditBuild(e.target.value)} placeholder="Sg, Autorifleman" />
+            </div>
+            <div><Label>Явка (%)</Label>
+              <Input value={editAttendance} onChange={e => setEditAttendance(e.target.value)} placeholder="98" />
+            </div>
+            <Button onClick={handleEditSave} className="w-full">Сохранить</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
