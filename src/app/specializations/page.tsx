@@ -217,9 +217,27 @@ export default function SpecializationsPage() {
                   <div><Label>Паттерн названия отделения (regex, опц.)</Label>
                     <Input value={assocSquadPattern} onChange={e => setAssocSquadPattern(e.target.value)} placeholder="Alpha-2-\d+" />
                   </div>
-                  <div><Label>Зависит от слотов (через запятую, опц.)</Label>
-                    <Input value={assocDependsOn} onChange={e => setAssocDependsOn(e.target.value)} placeholder="Командир отделения, Старший стрелок" />
-                    <p className="text-xs text-muted-foreground mt-1">Ассоциация сработает, только если в отделении есть эти слоты</p>
+                  <div><Label>Зависит от специализаций (опц.)</Label>
+                    <div className="flex flex-wrap gap-1.5 p-2 rounded-md border bg-background">
+                      {specializations.length === 0 && <span className="text-xs text-muted-foreground">Нет специализаций</span>}
+                      {specializations.map(sp => {
+                        const selected = assocDependsOn.split(',').map(s => s.trim()).filter(Boolean).includes(sp.name);
+                        return (
+                          <label key={sp.id} className={`flex items-center gap-1 px-2 py-1 rounded text-xs cursor-pointer ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}>
+                            <input type="checkbox" className="sr-only"
+                              checked={selected}
+                              onChange={() => {
+                                const current = assocDependsOn.split(',').map(s => s.trim()).filter(Boolean);
+                                const next = selected ? current.filter(n => n !== sp.name) : [...current, sp.name];
+                                setAssocDependsOn(next.join(', '));
+                              }}
+                            />
+                            {sp.name}
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Ассоциация сработает, только если в отделении есть слоты с этими специализациями</p>
                   </div>
                   <div><Label>Специализация</Label>
                     <select className="w-full rounded-md border p-2 bg-background" value={assocSpecializationId} onChange={e => setAssocSpecializationId(e.target.value)}>

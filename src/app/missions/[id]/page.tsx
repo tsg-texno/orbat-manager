@@ -23,7 +23,7 @@ export default function MissionDetailPage() {
   const params = useParams();
   const missionId = params.id as string;
   const mission = useAppStore(s => s.missions.find(m => m.id === missionId));
-  const { addSlotGroup, removeSlotGroup, updateSlotGroup, updateSlot, updateMission, addVehicleAssociation, fighters, specializations, vehicleTypes, vehicleAssociations, specializationAssociations } = useAppStore();
+  const { addSlotGroup, removeSlotGroup, updateSlotGroup, updateSlot, updateMission, addVehicleAssociation, addSpecializationAssociation, fighters, specializations, vehicleTypes, vehicleAssociations, specializationAssociations } = useAppStore();
 
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
@@ -187,24 +187,35 @@ export default function MissionDetailPage() {
                       ))}
                     </select>
                   </div>
-                  <Button size="sm" variant="outline" className="h-7 text-[11px] px-2" title="Сохранить соответствие техники слотам как ассоциации"
+                  <Button size="sm" variant="outline" className="h-7 text-[11px] px-2" title="Сохранить соответствие техники и специализаций слотам как ассоциации"
                     onClick={() => {
-                      let added = 0;
+                      let vehAdded = 0;
+                      let specAdded = 0;
                       for (const s of group.slots) {
-                        if (!s.vehicleId) continue;
-                        const exists = vehicleAssociations.some(
-                          va => va.slotPattern === s.title && va.squadPattern === group.name
-                        );
-                        if (exists) continue;
-                        addVehicleAssociation({
-                          slotPattern: s.title,
-                          squadPattern: group.name,
-                          vehicleTypeId: s.vehicleId,
-                        });
-                        added++;
+                        if (s.vehicleId) {
+                          const exists = vehicleAssociations.some(
+                            va => va.slotPattern === s.title && va.squadPattern === group.name
+                          );
+                          if (!exists) {
+                            addVehicleAssociation({ slotPattern: s.title, squadPattern: group.name, vehicleTypeId: s.vehicleId });
+                            vehAdded++;
+                          }
+                        }
+                        if (s.specializationId) {
+                          const exists = specializationAssociations.some(
+                            sa => sa.slotPattern === s.title && sa.squadPattern === group.name
+                          );
+                          if (!exists) {
+                            addSpecializationAssociation({ slotPattern: s.title, squadPattern: group.name, specializationId: s.specializationId });
+                            specAdded++;
+                          }
+                        }
                       }
-                      if (added > 0) alert(`Сохранено ${added} ассоциаций`);
-                      else alert('Новых ассоциаций нет (либо уже есть, либо нет техники в слотах)');
+                      const msgs = [];
+                      if (vehAdded > 0) msgs.push(`техники: ${vehAdded}`);
+                      if (specAdded > 0) msgs.push(`специализаций: ${specAdded}`);
+                      if (msgs.length > 0) alert(`Сохранено ассоциаций: ${msgs.join(', ')}`);
+                      else alert('Новых ассоциаций нет');
                     }}>
                     💾 Запомнить
                   </Button>
