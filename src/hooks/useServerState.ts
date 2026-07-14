@@ -6,27 +6,20 @@ import { pullServerState, pushServerState, extractStoreState } from '@/lib/serve
 const PUSH_DEBOUNCE = 1500;
 const PULL_INTERVAL = 8000;
 
-function mergeFromServer(store: typeof useAppStore, partial: Record<string, unknown>) {
+function replaceFromServer(store: typeof useAppStore, partial: Record<string, unknown>) {
   const state = store.getState();
-  const merged: Record<string, unknown> = {};
-  const mergeKeys = ['users', 'fighters', 'missions', 'specializations', 'vehicleTypes', 'vehicleAssociations', 'specializationAssociations'];
-  for (const key of mergeKeys) {
-    const serverItems = partial[key] as Array<{ id: string }> | undefined;
-    const localItems = (state as any)[key] as Array<{ id: string }> | undefined;
-    if (!serverItems || !localItems) {
-      if (serverItems) merged[key] = serverItems;
-      continue;
+  const safe: Record<string, unknown> = { ...partial };
+  delete safe.user;
+  // Merge users: server users + local user if not in server (newly registered)
+  const serverUsers = safe.users as Array<{ id: string }> | undefined;
+  if (Array.isArray(serverUsers) && state.user) {
+    const serverIds = new Set(serverUsers.map(u => u.id));
+    if (!serverIds.has(state.user.id)) {
+      serverUsers.push(state.user);
     }
-    const serverIds = new Set(serverItems.map(i => i.id));
-    // Keep any local items not on server (newly created locally)
-    merged[key] = [...serverItems, ...localItems.filter(i => !serverIds.has(i.id))];
   }
-  // For non-merge keys, use server value (but never overwrite current user session)
-  for (const [k, v] of Object.entries(partial)) {
-    if (k === 'user') continue;
-    if (!(k in merged)) merged[k] = v;
-  }
-  store.getState().importState(merged);
+  // Keep missions, fighters, etc. from server (source of truth) — no merge
+  store.getState().importState(safe);
 }
 
 export function useServerState() {
@@ -40,7 +33,7 @@ export function useServerState() {
       initialized.current = true;
       const serverState = await pullServerState();
       if (serverState) {
-        mergeFromServer(store, serverState as Record<string, unknown>);
+        replaceFromServer(store, serverState as Record<string, unknown>);
       }
     };
     init();
@@ -59,7 +52,7 @@ export function useServerState() {
       if (!serverState) return;
       const local = extractStoreState(store.getState());
       if (JSON.stringify(serverState) !== JSON.stringify(local)) {
-        mergeFromServer(store, serverState as Record<string, unknown>);
+        replaceFromServer(store, serverState as Record<string, unknown>);
       }
     };
 
