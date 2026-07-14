@@ -23,7 +23,7 @@ export function useSeedLoader() {
 
       if (data.vehicleTypes && vehicleTypes.length === 0) {
         for (const vt of data.vehicleTypes) {
-          addVehicleType({ name: vt.name, model: vt.model, faction: vt.faction, category: vt.category, icon: vt.icon, matchPatterns: vt.matchPatterns });
+          addVehicleType({ name: vt.name, model: vt.model, faction: vt.faction, category: vt.category, icon: vt.icon, matchPatterns: vt.matchPatterns, crewSize: vt.crewSize });
         }
       }
 

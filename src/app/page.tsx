@@ -174,7 +174,7 @@ export default function DashboardPage() {
                               {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-[48px] h-[32px]" />}
                               <div className="flex flex-col leading-tight">
                                 <span className="text-sm font-medium">{gv.vt.name}</span>
-                                <span className="text-xs text-muted-foreground">{gv.groupName}</span>
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">{gv.groupName} <span className="text-[10px]">×{gv.vt.crewSize ?? 1}</span></span>
                               </div>
                             </div>
                           ))}

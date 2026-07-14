@@ -96,6 +96,7 @@ export interface VehicleType {
   icon: string;
   matchPatterns: string[];
   crewSlots?: string[];
+  crewSize?: number;
 }
 
 export interface VehicleAssociation {

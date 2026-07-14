@@ -28,6 +28,7 @@ export default function VehiclesPage() {
   const [vtCategory, setVtCategory] = useState('Танк');
   const [vtIcon, setVtIcon] = useState('');
   const [vtCrewSlots, setVtCrewSlots] = useState('');
+  const [vtCrewSize, setVtCrewSize] = useState(1);
 
   const [assocOpen, setAssocOpen] = useState(false);
   const [assocEditId, setAssocEditId] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export default function VehiclesPage() {
   const [assocVehicleId, setAssocVehicleId] = useState('');
 
   const resetVt = () => {
-    setVtName(''); setVtModel(''); setVtFaction('ru'); setVtCategory('Танк'); setVtIcon(''); setVtCrewSlots(''); setVtEditId(null);
+    setVtName(''); setVtModel(''); setVtFaction('ru'); setVtCategory('Танк'); setVtIcon(''); setVtCrewSlots(''); setVtCrewSize(1); setVtEditId(null);
   };
 
   const resetAssoc = () => {
@@ -59,14 +60,14 @@ export default function VehiclesPage() {
     const vt = vehicleTypes.find(v => v.id === id);
     if (!vt) return;
     setVtName(vt.name); setVtModel(vt.model); setVtFaction(vt.faction); setVtCategory(vt.category); setVtIcon(vt.icon);
-    setVtCrewSlots((vt.crewSlots || []).join(', '));
+    setVtCrewSlots((vt.crewSlots || []).join(', ')); setVtCrewSize(vt.crewSize ?? 1);
     setVtEditId(id); setVtOpen(true);
   };
 
   const handleVtSave = () => {
     if (!vtName.trim()) return;
     const crewSlots = vtCrewSlots.trim() ? vtCrewSlots.split(',').map(s => s.trim()).filter(Boolean) : undefined;
-    const data = { name: vtName.trim(), model: vtModel.trim(), faction: vtFaction, category: vtCategory, icon: vtIcon || `${vtEditId ? vehicleTypes.find(v => v.id === vtEditId)?.icon : ''}`, matchPatterns: [vtName.trim()], crewSlots };
+    const data = { name: vtName.trim(), model: vtModel.trim(), faction: vtFaction, category: vtCategory, icon: vtIcon || `${vtEditId ? vehicleTypes.find(v => v.id === vtEditId)?.icon : ''}`, matchPatterns: [vtName.trim()], crewSlots, crewSize: vtCrewSize };
     if (vtEditId) updateVehicleType(vtEditId, data);
     else addVehicleType(data);
     resetVt(); setVtOpen(false);
@@ -119,9 +120,15 @@ export default function VehiclesPage() {
                     </div>
                   </div>
                   <div><Label>Иконка</Label><IconPicker value={vtIcon} onChange={setVtIcon} icons={allIcons} /></div>
-                  <div><Label>Экипаж (через запятую)</Label>
-                    <Input value={vtCrewSlots} onChange={e => setVtCrewSlots(e.target.value)} placeholder="Водитель УАЗа" />
-                    <p className="text-xs text-muted-foreground mt-1">Названия слотов экипажа, которые будут созданы при привязке техники к отделению</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><Label>Численность экипажа</Label>
+                      <Input type="number" min={1} value={vtCrewSize} onChange={e => setVtCrewSize(Math.max(1, parseInt(e.target.value) || 1))} />
+                      <p className="text-xs text-muted-foreground mt-1">Сколько человек нужно для управления</p>
+                    </div>
+                    <div><Label>Названия слотов экипажа</Label>
+                      <Input value={vtCrewSlots} onChange={e => setVtCrewSlots(e.target.value)} placeholder="Водитель УАЗа" />
+                      <p className="text-xs text-muted-foreground mt-1">Через запятую</p>
+                    </div>
                   </div>
                   <Button onClick={handleVtSave} className="w-full" title={vtEditId ? 'Сохранить изменения типа техники' : 'Создать новый тип техники'}>{vtEditId ? 'Сохранить' : 'Добавить'}</Button>
                 </div>
