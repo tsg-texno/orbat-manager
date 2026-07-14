@@ -14,6 +14,7 @@ interface SlotCardProps {
   fighters: Fighter[];
   specializations: Specialization[];
   vehicleTypes: VehicleType[];
+  occupiedFighterIds?: Set<string>;
 }
 
 const statusColors: Record<string, string> = {
@@ -37,7 +38,7 @@ const statusIcons: Record<string, string> = {
   occupied_by_others: '⚫',
 };
 
-export function SlotCard({ slot, missionId, groupId, fighters, specializations, vehicleTypes }: SlotCardProps) {
+export function SlotCard({ slot, missionId, groupId, fighters, specializations, vehicleTypes, occupiedFighterIds }: SlotCardProps) {
   const { updateSlot } = useAppStore();
   const [assigning, setAssigning] = useState(false);
   const [vehicleOpen, setVehicleOpen] = useState(false);
@@ -152,7 +153,7 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">— Снять —</SelectItem>
-                  {fighters.filter(f => f.status === 'active' || f.status === 'reserve').map(f => (
+                  {fighters.filter(f => (f.status === 'active' || f.status === 'reserve') && !occupiedFighterIds?.has(f.id)).map(f => (
                     <SelectItem key={f.id} value={f.id}>{f.nickname}</SelectItem>
                   ))}
                 </SelectContent>

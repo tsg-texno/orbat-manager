@@ -285,17 +285,31 @@ export default function MissionDetailPage() {
               )}
               <CardContent>
                 <div className="space-y-2">
-                  {(group.slots || []).map(slot => (
-                    <SlotCard
-                      key={slot.id}
-                      slot={slot}
-                      missionId={missionId}
-                      groupId={group.id}
-                      fighters={fighters}
-                      specializations={specializations}
-                      vehicleTypes={vehicleTypes}
-                    />
-                  ))}
+                  {(() => {
+                    const assignedFighters = new Set<string>();
+                    for (const g of mission?.slotGroups || []) {
+                      for (const s of g.slots || []) {
+                        if (s.occupiedBy && s.id !== '') assignedFighters.add(s.occupiedBy);
+                      }
+                    }
+                    return (group.slots || []).map(slot => {
+                      // Remove current slot's occupant from the set for this slot's dropdown
+                      const usedByOthers = new Set(assignedFighters);
+                      if (slot.occupiedBy) usedByOthers.delete(slot.occupiedBy);
+                      return (
+                        <SlotCard
+                          key={slot.id}
+                          slot={slot}
+                          missionId={missionId}
+                          groupId={group.id}
+                          fighters={fighters}
+                          specializations={specializations}
+                          vehicleTypes={vehicleTypes}
+                          occupiedFighterIds={usedByOthers}
+                        />
+                      );
+                    });
+                  })()}
                 </div>
               </CardContent>
             </Card>
