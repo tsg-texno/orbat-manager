@@ -32,9 +32,8 @@ export default function MissionDetailPage() {
     const parsed = parseSlotText(pasteText);
     if (!parsed) return;
     const withSpecs = autoAssignSpecializations(parsed.slots, specializations);
-    // Only auto-assign vehicles for slots not manually set
-    const withVehicles = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name);
-    addSlotGroup(missionId, { ...parsed, slots: withVehicles });
+    const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name);
+    addSlotGroup(missionId, { ...parsed, slots: withVehicles, vehicleIds: matchedVehicleIds });
     setPasteText('');
     setPasteOpen(false);
   };
@@ -42,12 +41,18 @@ export default function MissionDetailPage() {
   const reapplyVehicles = () => {
     if (!mission) return;
     for (const group of mission.slotGroups) {
-      for (const slot of group.slots) {
+      const allInGroup = group.slots || [];
+      const { matchedVehicleIds } = autoAssignVehicles(allInGroup, vehicleAssociations, group.name);
+      for (const slot of allInGroup) {
         if (slot.vehicleManuallySet) continue;
-        const assigned = autoAssignVehicles([slot], vehicleAssociations, group.name);
+        const { slots: assigned } = autoAssignVehicles([slot], vehicleAssociations, group.name);
         if (assigned[0].vehicleId !== slot.vehicleId) {
           updateSlot(missionId, group.id, slot.id, { vehicleId: assigned[0].vehicleId });
         }
+      }
+      const updated = [...new Set([...(group.vehicleIds || []), ...matchedVehicleIds])];
+      if (updated.length !== (group.vehicleIds || []).length) {
+        updateSlotGroup(missionId, group.id, { vehicleIds: updated });
       }
     }
   };

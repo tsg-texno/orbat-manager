@@ -68,8 +68,9 @@ export function autoAssignVehicles(
   associations: { id: string; slotPattern: string; vehicleTypeId: string; squadPattern?: string; dependsOnSlots?: string[] }[],
   squadName?: string,
   allSlots?: Slot[]
-): Slot[] {
-  return slots.map((slot, idx) => {
+): { slots: Slot[]; matchedVehicleIds: string[] } {
+  const matchedVehicleIds = new Set<string>();
+  const result = slots.map((slot, idx) => {
     if (slot.vehicleManuallySet) return slot;
     const match = associations.find(va => {
       try {
@@ -94,8 +95,10 @@ export function autoAssignVehicles(
       }
     });
     if (match) {
+      matchedVehicleIds.add(match.vehicleTypeId);
       return { ...slot, vehicleId: match.vehicleTypeId };
     }
     return slot;
   });
+  return { slots: result, matchedVehicleIds: Array.from(matchedVehicleIds) };
 }
