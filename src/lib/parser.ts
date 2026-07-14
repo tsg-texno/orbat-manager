@@ -110,7 +110,7 @@ export function autoAssignVehicles(
       matchedVehicleIds.push(assocMatch.vehicleTypeId);
       return { ...slot, vehicleId: assocMatch.vehicleTypeId };
     }
-    // Fallback: match slot title against vehicle crewSlots
+    // Fallback: match slot title against vehicle crewSlots (marks slot only, doesn't count as vehicle instance)
     if (vehicleTypes) {
       const crewMatch = vehicleTypes.find(vt =>
         vt.crewSlots?.some(cs => {
@@ -119,7 +119,7 @@ export function autoAssignVehicles(
         })
       );
       if (crewMatch) {
-        matchedVehicleIds.push(crewMatch.id);
+        matchedVehicleIds.push('');
         return { ...slot, vehicleId: crewMatch.id };
       }
     }
