@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 interface SheetMission {
   date: string; squad: string; name: string; status: string;
@@ -18,6 +20,7 @@ interface SheetMission {
 
 export default function MissionsPage() {
   const { missions, addMission, deleteMission } = useAppStore();
+  const { can } = usePermissions();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
@@ -78,9 +81,11 @@ export default function MissionsPage() {
   };
 
   return (
+    <RequirePerm perm={['view_orbat', 'manage_missions']}>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Миссии</h1>
+        <RequireEdit perm="manage_missions">
         <Dialog open={open} onOpenChange={setOpen}>
           <Button variant="outline" onClick={() => { setSheetOpen(true); loadSheet(); }}>
             📊 Из гугл-таблицы
@@ -122,6 +127,7 @@ export default function MissionsPage() {
             </div>
           </DialogContent>
         </Dialog>
+        </RequireEdit>
       </div>
 
       {missions.length === 0 ? (
@@ -149,7 +155,7 @@ export default function MissionsPage() {
                   <Link href={`/missions/${m.id}`} className="flex-1">
                     <Button size="sm" variant="default" className="w-full">Открыть</Button>
                   </Link>
-                  <Button size="sm" variant="destructive" onClick={() => deleteMission(m.id)}>✕</Button>
+                  <RequireEdit perm="manage_missions"><Button size="sm" variant="destructive" onClick={() => deleteMission(m.id)}>✕</Button></RequireEdit>
                 </div>
               </CardContent>
             </Card>
@@ -194,5 +200,6 @@ export default function MissionsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </RequirePerm>
   );
 }

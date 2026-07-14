@@ -16,6 +16,13 @@ const factionMap: Record<string, 'ru' | 'us' | 'generic'> = {
 };
 
 const categoryMap: Record<string, string> = {
+  HMG_KORD: 'Снаряжение',
+  AGS_17: 'Снаряжение',
+  SPG9: 'Снаряжение',
+  PKP: 'Снаряжение',
+  JAVELIN: 'Снаряжение',
+  FLAMETHROWER: 'Снаряжение',
+  TOW: 'Снаряжение',
   TANK: 'Танк',
   BMP: 'БМП',
   BMD: 'БМД',
@@ -72,7 +79,7 @@ const categoryMap: Record<string, string> = {
   METIS: 'ПТРК',
   FAGOT: 'ПТРК',
   RPG: 'ПТРК',
-  SPG9: 'ПТРК',
+
   STURM: 'ПТРК',
   KORD: 'ПВО',
   IGLA: 'ПВО',

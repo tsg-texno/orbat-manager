@@ -1,47 +1,55 @@
 'use client';
 import { useEffect, useCallback, useRef } from 'react';
 import { useAppStore } from '@/store/appStore';
-import { isSyncConfigured, pushDeltas, pullDeltas } from '@/lib/sync';
-import type { SyncDelta } from '@/lib/types';
+import { isSyncConfigured, pushState, pullState } from '@/lib/sync';
 
 export function useSync() {
-  const { syncEnabled, offlineMode, pendingDeltas, lastSyncTimestamp, setLastSyncTimestamp, addPendingDelta, clearPendingDeltas } = useAppStore();
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const syncEnabled = useAppStore(s => s.syncEnabled);
+  const offlineMode = useAppStore(s => s.offlineMode);
 
   const push = useCallback(async () => {
-    if (!syncEnabled || offlineMode || !isSyncConfigured() || pendingDeltas.length === 0) return;
-    const ok = await pushDeltas(pendingDeltas);
-    if (ok) clearPendingDeltas();
-  }, [syncEnabled, offlineMode, pendingDeltas, clearPendingDeltas]);
+    if (!syncEnabled || offlineMode || !isSyncConfigured()) return;
+    const store = useAppStore.getState();
+    const state = {
+      users: store.users,
+      fighters: store.fighters,
+      missions: store.missions,
+      roles: store.roles,
+      specializations: store.specializations,
+      vehicleTypes: store.vehicleTypes,
+      vehicleAssociations: store.vehicleAssociations,
+    };
+    await pushState(state);
+  }, [syncEnabled, offlineMode]);
 
   const pull = useCallback(async () => {
     if (!syncEnabled || offlineMode || !isSyncConfigured()) return;
-    await pullDeltas(lastSyncTimestamp);
-    setLastSyncTimestamp(Date.now());
-  }, [syncEnabled, offlineMode, lastSyncTimestamp, setLastSyncTimestamp]);
+    const remote = await pullState();
+    if (!remote) return;
+    const store = useAppStore.getState();
+    const merged: Partial<typeof remote> = {};
 
-  const queueDelta = useCallback((delta: SyncDelta) => {
-    addPendingDelta(delta);
-    if (!offlineMode && isSyncConfigured()) {
-      pushDeltas([delta]).then(ok => {
-        if (ok) {
-          const store = useAppStore.getState();
-          store.setLastSyncTimestamp(Date.now());
-          store.clearPendingDeltas();
-        }
-      });
+    if (remote.users && JSON.stringify(remote.users) !== JSON.stringify(store.users)) merged.users = remote.users;
+    if (remote.fighters && JSON.stringify(remote.fighters) !== JSON.stringify(store.fighters)) merged.fighters = remote.fighters;
+    if (remote.missions && JSON.stringify(remote.missions) !== JSON.stringify(store.missions)) merged.missions = remote.missions;
+    if (remote.roles && JSON.stringify(remote.roles) !== JSON.stringify(store.roles)) merged.roles = remote.roles;
+    if (remote.specializations && JSON.stringify(remote.specializations) !== JSON.stringify(store.specializations)) merged.specializations = remote.specializations;
+    if (remote.vehicleTypes && JSON.stringify(remote.vehicleTypes) !== JSON.stringify(store.vehicleTypes)) merged.vehicleTypes = remote.vehicleTypes;
+    if (remote.vehicleAssociations && JSON.stringify(remote.vehicleAssociations) !== JSON.stringify(store.vehicleAssociations)) merged.vehicleAssociations = remote.vehicleAssociations;
+
+    if (Object.keys(merged).length > 0) {
+      store.importState(merged);
     }
-  }, [addPendingDelta, offlineMode]);
+    store.setLastSyncTimestamp(Date.now());
+  }, [syncEnabled, offlineMode]);
 
   useEffect(() => {
     if (syncEnabled && !offlineMode && isSyncConfigured()) {
-      intervalRef.current = setInterval(() => { push(); pull(); }, 30000);
-      pull();
+      push();
+      const interval = setInterval(() => { push(); pull(); }, 15000);
+      return () => clearInterval(interval);
     }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
   }, [syncEnabled, offlineMode, push, pull]);
 
-  return { push, pull, queueDelta };
+  return { push, pull };
 }

@@ -3,21 +3,23 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/appStore';
 import { SyncStatus } from '@/components/sync/SyncStatus';
+import { usePermissions } from '@/lib/usePermissions';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { href: '/', label: 'Дашборд', icon: '📊' },
-  { href: '/missions', label: 'Миссии', icon: '🎯' },
-  { href: '/roster', label: 'Ростер', icon: '📋' },
-  { href: '/specializations', label: 'Специализации', icon: '⭐' },
-  { href: '/vehicles', label: 'Техника', icon: '🚁' },
-  { href: '/roles', label: 'Роли', icon: '🔑' },
-  { href: '/settings', label: 'Настройки', icon: '⚙️' },
+const navItems: { href: string; label: string; icon: string; needs: Parameters<ReturnType<typeof usePermissions>['canAny']> }[] = [
+  { href: '/', label: 'Дашборд', icon: '📊', needs: ['view_orbat'] },
+  { href: '/missions', label: 'Миссии', icon: '🎯', needs: ['view_orbat', 'manage_missions'] },
+  { href: '/roster', label: 'Ростер', icon: '📋', needs: ['view_roster'] },
+  { href: '/specializations', label: 'Специализации', icon: '⭐', needs: ['view_specializations', 'manage_specializations'] },
+  { href: '/vehicles', label: 'Техника', icon: '🚁', needs: ['view_vehicles', 'manage_vehicles'] },
+  { href: '/roles', label: 'Роли', icon: '🔑', needs: ['manage_roles'] },
+  { href: '/settings', label: 'Настройки', icon: '⚙️', needs: [] as any },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const user = useAppStore(s => s.user);
+  const { canAny } = usePermissions();
 
   return (
     <header className="border-b bg-card sticky top-0 z-50">
@@ -27,7 +29,7 @@ export function Header() {
             ORBAT<span className="text-primary">Manager</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
-            {navItems.map(item => (
+            {navItems.filter(item => !item.needs.length || canAny(...item.needs)).map(item => (
               <Link
                 key={item.href}
                 href={item.href}

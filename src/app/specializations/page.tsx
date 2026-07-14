@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { IconPicker } from '@/components/specializations/IconPicker';
 import { getAllIcons } from '@/lib/vehicleIcons';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 export default function SpecializationsPage() {
   const { specializations, addSpecialization, updateSpecialization, deleteSpecialization } = useAppStore();
@@ -52,9 +54,11 @@ export default function SpecializationsPage() {
   };
 
   return (
+    <RequirePerm perm={['view_specializations', 'manage_specializations']}>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Специализации</h1>
+        <RequireEdit perm="manage_specializations">
         <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}>
           <DialogTrigger onClick={() => setEditId(null)}>+ Новая специализация</DialogTrigger>
           <DialogContent>
@@ -85,6 +89,7 @@ export default function SpecializationsPage() {
             </div>
           </DialogContent>
         </Dialog>
+        </RequireEdit>
       </div>
 
       <Card>
@@ -111,10 +116,12 @@ export default function SpecializationsPage() {
                   <TableCell><Badge variant="outline">{s.category}</Badge></TableCell>
                   <TableCell><div className="w-6 h-6 rounded" style={{ backgroundColor: s.color }} /></TableCell>
                   <TableCell>
+                    <RequireEdit perm="manage_specializations">
                     <div className="flex gap-1">
                       <Button variant="ghost" size="sm" onClick={() => handleEdit(s.id)}>✏️</Button>
                       <Button variant="ghost" size="sm" onClick={() => deleteSpecialization(s.id)} className="text-destructive">🗑</Button>
                     </div>
+                    </RequireEdit>
                   </TableCell>
                 </TableRow>
               ))}
@@ -140,14 +147,15 @@ export default function SpecializationsPage() {
             { name: 'Пулемётчик (ручной)', patterns: ['Ручной пулеметчик', 'РПК'], icon: 'RU_PKP-Label.png' },
             { name: 'Разведчик', patterns: ['Разведчик', 'Разведка', 'Скорпион'], icon: 'GENERIC_RECON-Label.png' },
           ].filter(sugg => !specializations.some(s => s.name === sugg.name)).map(sugg => (
-            <Button key={sugg.name} variant="outline" size="sm" className="justify-start h-auto py-2"
+            <RequireEdit perm="manage_specializations" key={sugg.name}><Button variant="outline" size="sm" className="justify-start h-auto py-2"
               onClick={() => addSpecialization({ name: sugg.name, icon: sugg.icon, matchPatterns: sugg.patterns, category: 'пехота', color: '#22c55e', createdBy: 'system' })}>
               <img src={`/icons/${sugg.icon}`} alt="" className="w-5 h-5 mr-2 object-contain" />
               {sugg.name}
-            </Button>
+            </Button></RequireEdit>
           ))}
         </CardContent>
       </Card>
     </div>
+    </RequirePerm>
   );
 }

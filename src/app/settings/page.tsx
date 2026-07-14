@@ -9,12 +9,12 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { configureSync, loadSyncConfig, isSyncConfigured } from '@/lib/sync';
+import { configureSync, loadSyncConfig, isSyncConfigured, pushState, pullState } from '@/lib/sync';
 import { generateId } from '@/lib/utils';
 import type { AppUser } from '@/lib/types';
 
 export default function SettingsPage() {
-  const { user, users, setUser, updateUser, deleteUser, logout, fighters, roles, assignUserToFighter, syncEnabled, setSyncEnabled, offlineMode, setOfflineMode, pendingDeltas, lastSyncTimestamp, importState } = useAppStore();
+  const { user, users, setUser, updateUser, deleteUser, logout, fighters, roles, assignUserToFighter, syncEnabled, setSyncEnabled, offlineMode, setOfflineMode, lastSyncTimestamp, importState } = useAppStore();
 
   const [botToken, setBotToken] = useState('');
   const [chatId, setChatId] = useState('');
@@ -233,12 +233,34 @@ export default function SettingsPage() {
           <div><Label>Chat ID (личный)</Label>
             <Input value={chatId} onChange={e => setChatId(e.target.value)} placeholder="123456789" />
           </div>
-          <Button onClick={handleSaveSync}>Сохранить настройки синхронизации</Button>
+          <div className="flex gap-2">
+            <Button onClick={handleSaveSync}>Сохранить настройки</Button>
+            <Button variant="outline" onClick={async () => {
+              const store = useAppStore.getState();
+              await pushState({
+                users: store.users, fighters: store.fighters, missions: store.missions,
+                roles: store.roles, specializations: store.specializations,
+                vehicleTypes: store.vehicleTypes, vehicleAssociations: store.vehicleAssociations,
+              });
+              const remote = await pullState();
+              if (remote) {
+                const merged: any = {};
+                for (const key of ['users', 'fighters', 'missions', 'roles', 'specializations', 'vehicleTypes', 'vehicleAssociations']) {
+                  if ((remote as any)[key] && JSON.stringify((remote as any)[key]) !== JSON.stringify(store[key as keyof typeof store])) {
+                    merged[key] = (remote as any)[key];
+                  }
+                }
+                if (Object.keys(merged).length > 0) store.importState(merged);
+              }
+              store.setLastSyncTimestamp(Date.now());
+              alert('Синхронизация завершена');
+            }}>🔄 Принудительная синхронизация</Button>
+          </div>
 
           <div className="text-sm text-muted-foreground space-y-1 pt-4 border-t">
             <p>🟢 Статус: {isSyncConfigured() ? 'Настроен' : 'Не настроен'}</p>
-            <p>📤 Ожидает отправки: {pendingDeltas.length} изменений</p>
             <p>🕐 Последняя синхронизация: {lastSyncTimestamp ? new Date(lastSyncTimestamp).toLocaleString() : 'никогда'}</p>
+            <p className="text-xs">Синхронизация через Telegram: данные передаются и забираются через личный чат с ботом каждые 15 секунд</p>
           </div>
         </CardContent>
       </Card>

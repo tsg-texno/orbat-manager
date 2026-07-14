@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 import { useSeedLoader } from '@/lib/seedLoader';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm } from '@/components/auth/RequirePerm';
 
 interface SheetMission {
   date: string; squad: string; name: string; status: string;
@@ -61,6 +63,7 @@ export default function DashboardPage() {
   });
 
   return (
+    <RequirePerm perm="view_orbat">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Дашборд</h1>
@@ -191,5 +194,6 @@ export default function DashboardPage() {
         </Card>
       </div>
     </div>
+    </RequirePerm>
   );
 }

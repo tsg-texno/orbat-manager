@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { IconPicker } from '@/components/specializations/IconPicker';
 import { getAllIcons, getCategories } from '@/lib/vehicleIcons';
 import type { VehicleAssociation, VehicleType } from '@/lib/types';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 export default function VehiclesPage() {
   const { vehicleTypes, addVehicleType, updateVehicleType, deleteVehicleType, vehicleAssociations, addVehicleAssociation, removeVehicleAssociation } = useAppStore();
@@ -70,8 +72,9 @@ export default function VehiclesPage() {
   };
 
   return (
+    <RequirePerm perm={['view_vehicles', 'manage_vehicles']}>
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">🛠 Техника</h1>
+      <h1 className="text-2xl font-bold">Техника</h1>
 
       <Tabs defaultValue="types">
         <TabsList className="mb-4">
@@ -81,6 +84,7 @@ export default function VehiclesPage() {
 
         <TabsContent value="types" className="space-y-4 mt-4">
           <div className="flex justify-end">
+            <RequireEdit perm="manage_vehicles">
             <Dialog open={vtOpen} onOpenChange={(o) => { if (!o) resetVt(); setVtOpen(o); }}>
               <Button variant="default" onClick={() => setVtOpen(true)}>+ Тип техники</Button>
               <DialogContent>
@@ -109,6 +113,7 @@ export default function VehiclesPage() {
                 </div>
               </DialogContent>
             </Dialog>
+            </RequireEdit>
           </div>
 
           <Card>
@@ -127,12 +132,12 @@ export default function VehiclesPage() {
                 <TableBody>
                   {vehicleTypes.length === 0 ? (
                     <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      Нет типов техники. <Button variant="link" onClick={() => setVtOpen(true)}>Добавить</Button>
+                      Нет типов техники. <RequireEdit perm="manage_vehicles"><Button variant="link" onClick={() => setVtOpen(true)}>Добавить</Button></RequireEdit>
                     </TableCell></TableRow>
                   ) : vehicleTypes.map(vt => (
                     <TableRow key={vt.id}>
                       <TableCell>
-                        {vt.icon ? <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-8 h-8 object-contain" /> : '—'}
+                        {vt.icon ? <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-12 h-8 object-contain" /> : '—'}
                       </TableCell>
                       <TableCell className="font-medium">{vt.name}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{vt.model}</TableCell>
@@ -141,10 +146,12 @@ export default function VehiclesPage() {
                       </TableCell>
                       <TableCell><Badge>{vt.category}</Badge></TableCell>
                       <TableCell>
+                        <RequireEdit perm="manage_vehicles">
                         <div className="flex gap-1">
                           <Button variant="ghost" size="sm" onClick={() => handleVtEdit(vt.id)}>✏️</Button>
                           <Button variant="ghost" size="sm" onClick={() => deleteVehicleType(vt.id)} className="text-destructive">🗑</Button>
                         </div>
+                        </RequireEdit>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -153,6 +160,7 @@ export default function VehiclesPage() {
             </CardContent>
           </Card>
 
+          <RequireEdit perm="manage_vehicles">
           <Card>
             <CardHeader><CardTitle>Автоматически сопоставленные иконки</CardTitle></CardHeader>
             <CardContent>
@@ -164,7 +172,7 @@ export default function VehiclesPage() {
                         addVehicleType({ name: icon.name, model: icon.name, faction: icon.faction, category: icon.category, icon: icon.filename, matchPatterns: [icon.name] });
                       }
                     }}>
-                    <img src={`/icons/${icon.filename}`} alt={icon.name} className="w-10 h-10 object-contain" />
+                    <img src={`/icons/${icon.filename}`} alt={icon.name} className="w-[60px] h-10 object-contain" />
                     <span className="text-[10px] text-center leading-tight">{icon.name}</span>
                     <Badge variant="outline" className="text-[8px] px-1">{icon.category}</Badge>
                   </div>
@@ -172,10 +180,12 @@ export default function VehiclesPage() {
               </div>
             </CardContent>
           </Card>
+          </RequireEdit>
         </TabsContent>
 
         <TabsContent value="associations" className="space-y-4 mt-4">
           <div className="flex justify-end">
+            <RequireEdit perm="manage_vehicles">
             <Dialog open={assocOpen} onOpenChange={(o) => { if (!o) resetAssoc(); setAssocOpen(o); }}>
               <Button variant="default" onClick={() => setAssocOpen(true)}>+ Ассоциация</Button>
               <DialogContent>
@@ -203,6 +213,7 @@ export default function VehiclesPage() {
                 </div>
               </DialogContent>
             </Dialog>
+            </RequireEdit>
           </div>
 
           {(() => {
@@ -223,6 +234,7 @@ export default function VehiclesPage() {
         </TabsContent>
       </Tabs>
     </div>
+    </RequirePerm>
   );
 }
 
@@ -234,6 +246,7 @@ function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation }: {
 }) {
   const [open, setOpen] = useState(true);
   const vt = vehicleTypes.find(v => v.name === vtName);
+  const { can } = usePermissions();
   return (
     <Card>
       <CardHeader className="pb-2 cursor-pointer select-none" onClick={() => setOpen(!open)}>
@@ -274,7 +287,7 @@ function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation }: {
                       </div>
                     )}
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0">🗑</Button>
+                  {can('manage_vehicles') && <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0">🗑</Button>}
                 </div>
               );
             })}

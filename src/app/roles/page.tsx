@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Permission } from '@/lib/types';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 const allPermissions: { key: Permission; label: string }[] = [
   { key: 'manage_roles', label: 'Управление ролями' },
@@ -55,6 +57,7 @@ export default function RolesPage() {
   };
 
   return (
+    <RequirePerm perm="manage_roles">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Роли и права</h1>
@@ -123,5 +126,6 @@ export default function RolesPage() {
         </CardContent>
       </Card>
     </div>
+    </RequirePerm>
   );
 }

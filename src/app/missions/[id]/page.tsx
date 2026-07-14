@@ -16,6 +16,8 @@ import { SlotCard } from '@/components/orbat/SlotCard';
 import { generateId } from '@/lib/utils';
 import type { VehicleType } from '@/lib/types';
 import Link from 'next/link';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 export default function MissionDetailPage() {
   const params = useParams();
@@ -100,6 +102,7 @@ export default function MissionDetailPage() {
   );
 
   return (
+    <RequirePerm perm="view_orbat">
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
@@ -116,9 +119,10 @@ export default function MissionDetailPage() {
             <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500">🟡 {reserve}</Badge>
             <Badge variant="outline" className="bg-gray-500/10 text-gray-500">⚫ {occupied}</Badge>
           </div>
-          <Button variant="outline" size="sm" onClick={reapplyVehicles} title="Переприменить ассоциации техники">
+          <RequireEdit perm="manage_slots"><Button variant="outline" size="sm" onClick={reapplyVehicles} title="Переприменить ассоциации техники">
             🔄 Техника
-          </Button>
+          </Button></RequireEdit>
+          <RequireEdit perm="manage_slots">
           <Dialog open={pasteOpen} onOpenChange={setPasteOpen}>
             <DialogTrigger>📋 Вставить расстановку</DialogTrigger>
             <DialogContent className="max-w-xl">
@@ -135,6 +139,7 @@ export default function MissionDetailPage() {
               </div>
             </DialogContent>
           </Dialog>
+          </RequireEdit>
         </div>
       </div>
 
@@ -143,7 +148,7 @@ export default function MissionDetailPage() {
           <CardContent className="py-16 text-center text-muted-foreground">
             <p className="text-lg mb-2">Нет расстановки</p>
             <p className="text-sm mb-4">Вставьте скопированную расстановку из игры или из текстового файла</p>
-            <Button onClick={() => setPasteOpen(true)}>📋 Вставить расстановку</Button>
+            <RequireEdit perm="manage_slots"><Button onClick={() => setPasteOpen(true)}>📋 Вставить расстановку</Button></RequireEdit>
           </CardContent>
         </Card>
       ) : (
@@ -158,25 +163,20 @@ export default function MissionDetailPage() {
                   <Badge variant="secondary" className="text-xs">{(group.slots || []).length} слотов</Badge>
                 </CardTitle>
                 <div className="flex items-center gap-1 flex-wrap">
-                  {groupVts.map(vt => (
-                    <span key={vt.id} className="text-[10px] text-muted-foreground mr-1">
-                      {vt.crewSlots?.length ? `👤×${vt.crewSlots.length}` : ''}
-                    </span>
-                  ))}
-                  <div className="flex items-center gap-1">
-                    {vehicleTypes.map(vt => {
-                      const isSelected = group.vehicleIds?.includes(vt.id);
-                      return (
-                        <button key={vt.id}
-                          onClick={() => toggleGroupVehicle(group.id, vt.id)}
-                          className={`p-1 rounded border text-xs transition-colors ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-muted-foreground'}`}
-                          title={`${isSelected ? 'Убрать' : 'Добавить'} ${vt.name}`}>
-                          {vt.icon
-                            ? <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-6 h-6" />
-                            : <span className="text-[10px] px-1">{vt.name.slice(0, 4)}</span>}
-                        </button>
-                      );
-                    })}
+                  <RequireEdit perm="manage_slots">
+                  <div className="flex items-center gap-2">
+                    <select
+                      className="h-8 text-xs rounded-md border bg-background px-2"
+                      value=""
+                      onChange={e => { if (e.target.value) toggleGroupVehicle(group.id, e.target.value); }}
+                    >
+                      <option value="">+ Добавить технику</option>
+                      {vehicleTypes
+                        .filter(vt => !group.vehicleIds?.includes(vt.id))
+                        .map(vt => (
+                          <option key={vt.id} value={vt.id}>{vt.name}</option>
+                        ))}
+                    </select>
                   </div>
                   <Button size="sm" variant="outline" className="h-7 text-[11px] px-2"
                     onClick={() => {
@@ -203,14 +203,23 @@ export default function MissionDetailPage() {
                     onClick={() => removeSlotGroup(missionId, group.id)}>
                     ✕
                   </Button>
+                  </RequireEdit>
                 </div>
               </CardHeader>
               {groupVts.length > 0 && (
-                <div className="px-4 pb-2 flex flex-wrap gap-3">
+                <div className="px-4 pb-2 flex flex-wrap gap-2">
                   {groupVts.map(vt => (
-                    <div key={vt.id} className="flex flex-col items-center gap-1 p-2 rounded-lg border-2 border-primary/30 bg-primary/5">
-                      {vt.icon && <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-12 h-12" />}
+                    <div key={vt.id} className="flex flex-col items-center gap-1 p-2 rounded-lg border-2 border-primary/30 bg-primary/5 relative group/veh">
+                      <RequireEdit perm="manage_slots">
+                        <button
+                          onClick={() => toggleGroupVehicle(group.id, vt.id)}
+                          className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] leading-none flex items-center justify-center opacity-0 group-hover/veh:opacity-100 transition-opacity"
+                          title="Убрать"
+                        >✕</button>
+                      </RequireEdit>
+                      {vt.icon && <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-[72px] h-12" />}
                       <span className="text-[10px] font-medium text-center leading-tight">{vt.name}</span>
+                      {vt.crewSlots?.length ? <span className="text-[9px] text-muted-foreground">👤×{vt.crewSlots.length}</span> : null}
                     </div>
                   ))}
                 </div>
@@ -236,5 +245,6 @@ export default function MissionDetailPage() {
         </div>
       )}
     </div>
+    </RequirePerm>
   );
 }

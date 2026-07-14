@@ -1,27 +1,46 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAppStore } from '@/store/appStore';
-import { isSyncConfigured, pushDeltas, pullDeltas } from '@/lib/sync';
+import { isSyncConfigured, pushState, pullState } from '@/lib/sync';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function SyncStatus() {
-  const { pendingDeltas, offlineMode, lastSyncTimestamp, setLastSyncTimestamp, clearPendingDeltas, syncEnabled } = useAppStore();
+  const { syncEnabled, offlineMode, lastSyncTimestamp, setLastSyncTimestamp } = useAppStore();
   const [syncing, setSyncing] = useState(false);
   const [status, setStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
-
   const configured = isSyncConfigured();
+  const lastPushRef = useRef(0);
 
   const handleSync = async () => {
     if (!configured || syncing) return;
     setSyncing(true);
     setStatus('syncing');
     try {
-      if (pendingDeltas.length > 0) {
-        const ok = await pushDeltas(pendingDeltas);
-        if (ok) clearPendingDeltas();
+      const store = useAppStore.getState();
+      await pushState({
+        users: store.users,
+        fighters: store.fighters,
+        missions: store.missions,
+        roles: store.roles,
+        specializations: store.specializations,
+        vehicleTypes: store.vehicleTypes,
+        vehicleAssociations: store.vehicleAssociations,
+      });
+      lastPushRef.current = Date.now();
+      const remote = await pullState();
+      if (remote) {
+        const merged: Partial<typeof remote> = {};
+        const keys: (keyof typeof remote)[] = ['users', 'fighters', 'missions', 'roles', 'specializations', 'vehicleTypes', 'vehicleAssociations'];
+        for (const key of keys) {
+          if (remote[key] && JSON.stringify(remote[key]) !== JSON.stringify(store[key])) {
+            (merged as any)[key] = remote[key];
+          }
+        }
+        if (Object.keys(merged).length > 0) {
+          store.importState(merged);
+        }
       }
-      await pullDeltas(lastSyncTimestamp);
       setLastSyncTimestamp(Date.now());
       setStatus('synced');
       setTimeout(() => setStatus('idle'), 2000);
@@ -41,7 +60,6 @@ export function SyncStatus() {
     if (status === 'syncing') return { icon: '🔄', label: 'Синхронизация...' };
     if (status === 'synced') return { icon: '🟢', label: 'Синхронизировано' };
     if (status === 'error') return { icon: '🔴', label: 'Ошибка' };
-    if (pendingDeltas.length > 0) return { icon: '🟡', label: `${pendingDeltas.length} изменений` };
     return { icon: '🟢', label: 'Актуально' };
   };
 

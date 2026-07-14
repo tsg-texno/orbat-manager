@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { generateId } from '@/lib/utils';
 import type { Fighter } from '@/lib/types';
+import { usePermissions } from '@/lib/usePermissions';
+import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 const statusBadge: Record<string, string> = {
   active: 'bg-green-500/10 text-green-500',
@@ -128,6 +130,7 @@ export default function RosterPage() {
   };
 
   return (
+    <RequirePerm perm="view_roster">
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Ростер бойцов</h1>
@@ -233,5 +236,6 @@ export default function RosterPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </RequirePerm>
   );
 }
