@@ -78,7 +78,8 @@ export function autoAssignVehicles(
   slots: Slot[],
   associations: { id: string; slotPattern: string; vehicleTypeId: string; squadPattern?: string; dependsOnSlots?: string[] }[],
   squadName?: string,
-  allSlots?: Slot[]
+  allSlots?: Slot[],
+  specializations?: { id: string; name: string }[]
 ): { slots: Slot[]; matchedVehicleIds: string[] } {
   const matchedVehicleIds = new Set<string>();
   const result = slots.map((slot, idx) => {
@@ -88,11 +89,15 @@ export function autoAssignVehicles(
         const slotMatch = new RegExp(va.slotPattern, 'i').test(slot.title);
         if (!slotMatch) return false;
         // squadPattern is insignificant — only slot pattern matters for match
-        if (va.dependsOnSlots && va.dependsOnSlots.length > 0) {
+        if (va.dependsOnSlots && va.dependsOnSlots.length > 0 && specializations) {
           const deps = allSlots || slots;
           const allDepMatch = va.dependsOnSlots.every(dp => {
-            try { return deps.some(s => new RegExp(dp, 'i').test(s.title)); }
-            catch { return deps.some(s => s.title.toLowerCase().includes(dp.toLowerCase())); }
+            // Check if any slot in the group has a specialization matching the dependency
+            return deps.some(s => {
+              if (!s.specializationId) return false;
+              const spec = specializations.find(sp => sp.id === s.specializationId);
+              return spec && spec.name.toLowerCase() === dp.toLowerCase();
+            });
           });
           if (!allDepMatch) return false;
         }

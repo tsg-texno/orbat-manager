@@ -32,7 +32,7 @@ export default function MissionDetailPage() {
     const parsed = parseSlotText(pasteText);
     if (!parsed) return;
     const withSpecs = autoAssignSpecializations(parsed.slots, specializations, specializationAssociations);
-    const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name);
+    const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name, undefined, specializations);
     addSlotGroup(missionId, { ...parsed, slots: withVehicles, vehicleIds: matchedVehicleIds });
     setPasteText('');
     setPasteOpen(false);
@@ -42,10 +42,10 @@ export default function MissionDetailPage() {
     if (!mission) return;
     for (const group of mission.slotGroups) {
       const allInGroup = group.slots || [];
-      const { matchedVehicleIds } = autoAssignVehicles(allInGroup, vehicleAssociations, group.name);
+      const { matchedVehicleIds } = autoAssignVehicles(allInGroup, vehicleAssociations, group.name, undefined, specializations);
       for (const slot of allInGroup) {
         if (slot.vehicleManuallySet) continue;
-        const { slots: assigned } = autoAssignVehicles([slot], vehicleAssociations, group.name);
+        const { slots: assigned } = autoAssignVehicles([slot], vehicleAssociations, group.name, undefined, specializations);
         if (assigned[0].vehicleId !== slot.vehicleId) {
           updateSlot(missionId, group.id, slot.id, { vehicleId: assigned[0].vehicleId });
         }
@@ -191,16 +191,37 @@ export default function MissionDetailPage() {
                     onClick={() => {
                       let vehAdded = 0;
                       let specAdded = 0;
+                      // Group slots by vehicle type to create one association per vehicle
+                      const vehGroups = new Map<string, { titles: string[]; specNames: Set<string> }>();
                       for (const s of group.slots) {
                         if (s.vehicleId) {
-                          const exists = vehicleAssociations.some(
-                            va => va.slotPattern === s.title && va.squadPattern === group.name
-                          );
-                          if (!exists) {
-                            addVehicleAssociation({ slotPattern: s.title, squadPattern: group.name, vehicleTypeId: s.vehicleId });
-                            vehAdded++;
+                          if (!vehGroups.has(s.vehicleId)) vehGroups.set(s.vehicleId, { titles: [], specNames: new Set() });
+                          const entry = vehGroups.get(s.vehicleId)!;
+                          entry.titles.push(s.title);
+                          if (s.specializationId) {
+                            const sp = specializations.find(sp => sp.id === s.specializationId);
+                            if (sp) entry.specNames.add(sp.name);
                           }
                         }
+                      }
+                      for (const [vehicleId, { titles, specNames }] of vehGroups) {
+                        const vt = vehicleTypes.find(v => v.id === vehicleId);
+                        if (!vt) continue;
+                        // Derive pattern from vehicle model or name
+                        const pattern = vt.model || vt.name;
+                        const exists = vehicleAssociations.some(va => va.slotPattern === pattern && va.squadPattern === group.name);
+                        if (!exists) {
+                          addVehicleAssociation({
+                            slotPattern: pattern,
+                            squadPattern: group.name,
+                            vehicleTypeId: vehicleId,
+                            dependsOnSlots: specNames.size > 0 ? Array.from(specNames) : undefined,
+                          });
+                          vehAdded++;
+                        }
+                      }
+                      // Per-slot specialization associations
+                      for (const s of group.slots) {
                         if (s.specializationId) {
                           const exists = specializationAssociations.some(
                             sa => sa.slotPattern === s.title && sa.squadPattern === group.name
