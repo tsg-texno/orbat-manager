@@ -137,7 +137,7 @@ export default function VehiclesPage() {
                   ) : vehicleTypes.map(vt => (
                     <TableRow key={vt.id}>
                       <TableCell>
-                        {vt.icon ? <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-12 h-8 object-contain" /> : '—'}
+                        {vt.icon ? <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-[60px] h-10 object-contain" /> : '—'}
                       </TableCell>
                       <TableCell className="font-medium">{vt.name}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{vt.model}</TableCell>

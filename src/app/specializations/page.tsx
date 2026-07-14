@@ -110,7 +110,7 @@ export default function SpecializationsPage() {
                 <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Нет специализаций</TableCell></TableRow>
               ) : specializations.map(s => (
                 <TableRow key={s.id}>
-                  <TableCell><img src={`/icons/${s.icon}`} alt={s.name} className="w-8 h-8 object-contain" /></TableCell>
+                  <TableCell><img src={`/icons/${s.icon}`} alt={s.name} className="w-10 h-10 object-contain" /></TableCell>
                   <TableCell className="font-medium">{s.name}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{s.matchPatterns.join(', ') || '—'}</TableCell>
                   <TableCell><Badge variant="outline">{s.category}</Badge></TableCell>

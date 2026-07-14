@@ -116,45 +116,64 @@ export default function DashboardPage() {
                 <Link href="/missions"><Button>Создать миссию</Button></Link>
               </div>
             ) : (
-              <ScrollArea className="max-h-[400px]">
+              <ScrollArea className="max-h-[600px]">
                 <div className="space-y-3">
                   {missionSpecStats.map(({ mission: m, specs, noSpecTotal, noSpecFilled, groupVehicles }) => {
-                    const ratio = (t: number, f: number) => f / t || 0;
-                    const occColor = (t: number, f: number) => {
-                      if (t === 0) return 'text-muted-foreground';
-                      const r = f / t;
-                      if (r < 0.33) return 'text-red-500';
-                      if (r < 0.67) return 'text-yellow-500';
-                      return 'text-green-500';
-                    };
+                    const total = specs.reduce((s, x) => s + x.total, 0) + noSpecTotal;
+                    const filled = specs.reduce((s, x) => s + x.filled, 0) + noSpecFilled;
+                    const pct = total > 0 ? Math.round(filled / total * 100) : 0;
+                    const barColor = pct < 33 ? 'bg-red-500' : pct < 67 ? 'bg-yellow-500' : 'bg-green-500';
                     return (
                     <Link key={m.id} href={`/missions/${m.id}`}
-                      className="block p-3 rounded-lg border hover:bg-accent transition-colors">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <p className="font-medium">{m.name}</p>
-                        <span className="text-xs text-muted-foreground">{m.date}</span>
+                      className="block p-4 rounded-lg border hover:bg-accent transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <p className="text-base font-semibold">{m.name}</p>
+                          <span className="text-xs text-muted-foreground">{m.date}</span>
+                        </div>
+                        <span className={`text-sm font-bold ${total > 0 ? (pct < 33 ? 'text-red-500' : pct < 67 ? 'text-yellow-500' : 'text-green-500') : 'text-muted-foreground'}`}>
+                          {filled}/{total} ({pct}%)
+                        </span>
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {specs.map((sp, i) => (
-                          <Badge key={i} variant="secondary" className={`text-sm px-2 py-1 gap-1.5 ${occColor(sp.total, sp.filled)}`}>
-                            {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-5 h-5" />}
-                            {sp.name}
-                            <span className="ml-0.5 font-semibold">{sp.filled}/{sp.total}</span>
-                          </Badge>
-                        ))}
+                      {total > 0 && (
+                        <div className="w-full h-2 bg-muted rounded-full mb-3 overflow-hidden">
+                          <div className={`h-full rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
+                        </div>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {specs.map((sp, i) => {
+                          const r = sp.total > 0 ? sp.filled / sp.total : 0;
+                          const c = r < 0.33 ? 'border-red-500/40 bg-red-500/5' : r < 0.67 ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-green-500/40 bg-green-500/5';
+                          return (
+                            <div key={i} className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border ${c}`}>
+                              {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-[30px] h-[30px]" />}
+                              <div className="flex flex-col leading-tight">
+                                <span className="text-xs font-medium">{sp.name}</span>
+                                <span className={`text-xs font-bold ${r < 0.33 ? 'text-red-500' : r < 0.67 ? 'text-yellow-500' : 'text-green-500'}`}>
+                                  {sp.filled}/{sp.total}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
                         {noSpecTotal > 0 && (
-                          <Badge variant="outline" className={`text-sm px-2 py-1 ${occColor(noSpecTotal, noSpecFilled)}`}>
-                            ? <span className="ml-0.5 font-semibold">{noSpecFilled}/{noSpecTotal}</span>
-                          </Badge>
+                          <div className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-muted">
+                            <div className="w-[30px] h-[30px] rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">?</div>
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-xs font-medium">Без специ</span>
+                              <span className="text-xs font-bold text-muted-foreground">{noSpecFilled}/{noSpecTotal}</span>
+                            </div>
+                          </div>
                         )}
                       </div>
                       {groupVehicles.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t">
+                        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t">
                           {groupVehicles.map((gv, i) => gv && (
-                            <Badge key={i} variant="outline" className="text-xs px-1.5 py-0.5 gap-1">
-                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-5 h-5" />}
-                              {gv.groupName}: {gv.vt.name}
-                            </Badge>
+                            <div key={i} className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-muted/50">
+                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-[30px] h-[30px]" />}
+                              <span className="text-muted-foreground">{gv.groupName}:</span>
+                              <span className="font-medium">{gv.vt.name}</span>
+                            </div>
                           ))}
                         </div>
                       )}

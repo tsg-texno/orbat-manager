@@ -83,7 +83,7 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
             <Tooltip>
               <TooltipTrigger className="cursor-help inline-flex items-center">
                 <Badge variant="secondary" className="text-sm px-2 py-1 h-7 gap-1.5">
-                  {spec.icon && <img src={`/icons/${spec.icon}`} alt="" className="w-6 h-6 inline-block" />}
+                  {spec.icon && <img src={`/icons/${spec.icon}`} alt="" className="w-[30px] h-[30px] inline-block" />}
                   {spec.name}
                 </Badge>
               </TooltipTrigger>
@@ -113,9 +113,9 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
         <Tooltip>
           <TooltipTrigger className="inline-flex items-center" onClick={() => setVehicleOpen(true)}>
             {vehicle ? (
-              <img src={`/icons/${vehicle.icon}`} alt="" className="w-12 h-8 cursor-pointer" />
+              <img src={`/icons/${vehicle.icon}`} alt="" className="w-[60px] h-10 cursor-pointer" />
             ) : (
-              <span className="w-12 h-8 rounded border border-dashed border-muted-foreground inline-block cursor-pointer" />
+              <span className="w-[60px] h-10 rounded border border-dashed border-muted-foreground inline-block cursor-pointer" />
             )}
           </TooltipTrigger>
           {vehicle && (
@@ -135,7 +135,7 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
               <SelectItem value="none">— Без техники —</SelectItem>
               {vehicleTypes.map(v => (
                 <SelectItem key={v.id} value={v.id} className="text-xs">
-                  {v.icon && <img src={`/icons/${v.icon}`} alt="" className="w-9 h-6 inline-block mr-1" />}
+                  {v.icon && <img src={`/icons/${v.icon}`} alt="" className="w-[45px] h-[30px] inline-block mr-1" />}
                   {v.name}
                 </SelectItem>
               ))}

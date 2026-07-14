@@ -28,7 +28,7 @@ export function IconPicker({ value, onChange, icons }: IconPickerProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full justify-start gap-2 h-12 border border-border bg-background hover:bg-muted hover:text-foreground rounded-lg px-2.5 text-sm font-medium">
         {value ? (
-          <><img src={`/icons/${value}`} alt="" className="w-9 h-6 object-contain inline-block align-middle mr-1" />{value}</>
+          <><img src={`/icons/${value}`} alt="" className="w-[45px] h-[30px] object-contain inline-block align-middle mr-1" />{value}</>
         ) : 'Выбрать иконку'}
       </DialogTrigger>
       <DialogContent className="max-w-lg">
@@ -50,7 +50,7 @@ export function IconPicker({ value, onChange, icons }: IconPickerProps) {
                   className="h-auto p-2 flex-col gap-1"
                   onClick={() => { onChange(icon.filename); setOpen(false); }}
                 >
-                  <img src={`/icons/${icon.filename}`} alt={icon.name} className="w-12 h-8 object-contain" />
+                  <img src={`/icons/${icon.filename}`} alt={icon.name} className="w-[60px] h-10 object-contain" />
                   <span className="text-[10px] leading-tight text-center truncate w-full">{icon.name}</span>
                 </Button>
               ))}
