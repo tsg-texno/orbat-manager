@@ -51,7 +51,7 @@ export default function MissionDetailPage() {
   };
 
   const allSlots = useMemo(() =>
-    mission?.slotGroups.flatMap(g => g.slots) ?? [],
+    (mission?.slotGroups || []).flatMap(g => g.slots || []) ?? [],
     [mission?.slotGroups]
   );
   const taken = allSlots.filter(s => s.status === 'taken_by_us').length;
@@ -70,7 +70,7 @@ export default function MissionDetailPage() {
     if (idx < 0) {
       const vt = vehicleTypes.find(v => v.id === vehicleId);
       if (vt && vt.crewSlots?.length) {
-        const newSlots = [...group.slots];
+        const newSlots = [...(group.slots || [])];
         const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
         let added = 0;
         for (const crewTitle of vt.crewSlots) {
@@ -155,7 +155,7 @@ export default function MissionDetailPage() {
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   {group.name}
-                  <Badge variant="secondary" className="text-xs">{group.slots.length} слотов</Badge>
+                  <Badge variant="secondary" className="text-xs">{(group.slots || []).length} слотов</Badge>
                 </CardTitle>
                 <div className="flex items-center gap-1 flex-wrap">
                   {groupVts.map(vt => (
@@ -217,7 +217,7 @@ export default function MissionDetailPage() {
               )}
               <CardContent>
                 <div className="space-y-2">
-                  {group.slots.map(slot => (
+                  {(group.slots || []).map(slot => (
                     <SlotCard
                       key={slot.id}
                       slot={slot}

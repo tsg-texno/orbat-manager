@@ -56,7 +56,11 @@ interface AppStore extends AppState {
 export const useAppStore = create<AppStore>((set, get) => ({
   user: loadFromStorage<AppUser | null>('user', null),
   fighters: loadFromStorage<Fighter[]>('fighters', []),
-  missions: loadFromStorage<Mission[]>('missions', []),
+  missions: (() => {
+    const raw = loadFromStorage<Mission[]>('missions', []);
+    // Sanitize: ensure every slotGroup has a slots array
+    return raw.map(m => ({ ...m, slotGroups: m.slotGroups.map(g => ({ ...g, slots: g.slots || [] })) }));
+  })(),
   roles: loadFromStorage<Role[]>('roles', defaultRoles),
   specializations: loadFromStorage<Specialization[]>('specializations', []),
   vehicleTypes: loadFromStorage<VehicleType[]>('vehicleTypes', []),

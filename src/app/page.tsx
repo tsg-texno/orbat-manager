@@ -30,14 +30,14 @@ export default function DashboardPage() {
   }, []);
 
   const totalSlots = missions.reduce((acc, m) =>
-    acc + m.slotGroups.reduce((sgAcc, sg) => sgAcc + sg.slots.length, 0), 0);
+    acc + m.slotGroups.reduce((sgAcc, sg) => sgAcc + (sg.slots || []).length, 0), 0);
   const takenSlots = missions.reduce((acc, m) =>
     acc + m.slotGroups.reduce((sgAcc, sg) =>
-      sgAcc + sg.slots.filter(s => s.status === 'taken_by_us').length, 0), 0);
+      sgAcc + (sg.slots || []).filter(s => s.status === 'taken_by_us').length, 0), 0);
 
   const vehicleTypes = useAppStore(s => s.vehicleTypes);
   const missionSpecStats = missions.map(m => {
-    const claimableSlots = m.slotGroups.flatMap(g => g.slots).filter(s => s.status !== 'reserve' && s.status !== 'occupied_by_others');
+    const claimableSlots = m.slotGroups.flatMap(g => g.slots || []).filter(s => s.status !== 'reserve' && s.status !== 'occupied_by_others');
     const specCounts = new Map<string, { name: string; icon: string; total: number; filled: number }>();
     let noSpecTotal = 0, noSpecFilled = 0;
     for (const s of claimableSlots) {
@@ -80,7 +80,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-0.5 text-xs text-muted-foreground">
               {missions.map(m => {
-                const slots = m.slotGroups.flatMap(g => g.slots);
+                const slots = m.slotGroups.flatMap(g => g.slots || []);
                 const taken = slots.filter(s => s.status === 'taken_by_us').length;
                 const claimable = slots.filter(s => s.status !== 'reserve' && s.status !== 'occupied_by_others').length;
                 return (

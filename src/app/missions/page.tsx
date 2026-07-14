@@ -144,7 +144,7 @@ export default function MissionsPage() {
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-1">🗺 {m.map || '—'}</p>
                 <p className="text-sm text-muted-foreground mb-1">⚔️ {m.faction}</p>
-                <p className="text-sm text-muted-foreground mb-3">🎯 {m.slotGroups.reduce((a, g) => a + g.slots.length, 0)} слотов</p>
+                <p className="text-sm text-muted-foreground mb-3">🎯 {m.slotGroups.reduce((a, g) => a + (g.slots || []).length, 0)} слотов</p>
                 <div className="flex gap-2">
                   <Link href={`/missions/${m.id}`} className="flex-1">
                     <Button size="sm" variant="default" className="w-full">Открыть</Button>
