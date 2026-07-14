@@ -6,6 +6,29 @@ import { pullServerState, pushServerState, extractStoreState } from '@/lib/serve
 const PUSH_DEBOUNCE = 1500;
 const PULL_INTERVAL = 8000;
 
+function mergeFromServer(store: typeof useAppStore, partial: Record<string, unknown>) {
+  const state = store.getState();
+  const merged: Record<string, unknown> = {};
+  const mergeKeys = ['users', 'fighters', 'missions', 'specializations', 'vehicleTypes', 'vehicleAssociations', 'specializationAssociations'];
+  for (const key of mergeKeys) {
+    const serverItems = partial[key] as Array<{ id: string }> | undefined;
+    const localItems = (state as any)[key] as Array<{ id: string }> | undefined;
+    if (!serverItems || !localItems) {
+      if (serverItems) merged[key] = serverItems;
+      continue;
+    }
+    const serverIds = new Set(serverItems.map(i => i.id));
+    // Keep any local items not on server (newly created locally)
+    merged[key] = [...serverItems, ...localItems.filter(i => !serverIds.has(i.id))];
+  }
+  // For non-merge keys, use server value (but never overwrite current user session)
+  for (const [k, v] of Object.entries(partial)) {
+    if (k === 'user') continue;
+    if (!(k in merged)) merged[k] = v;
+  }
+  store.getState().importState(merged);
+}
+
 export function useServerState() {
   const initialized = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
@@ -17,9 +40,7 @@ export function useServerState() {
       initialized.current = true;
       const serverState = await pullServerState();
       if (serverState) {
-        // Don't overwrite current session user
-        const { user: _, ...safe } = serverState as any;
-        store.getState().importState(safe);
+        mergeFromServer(store, serverState as Record<string, unknown>);
       }
     };
     init();
@@ -38,8 +59,7 @@ export function useServerState() {
       if (!serverState) return;
       const local = extractStoreState(store.getState());
       if (JSON.stringify(serverState) !== JSON.stringify(local)) {
-        const { user: _, ...safe } = serverState as any;
-        store.getState().importState(safe);
+        mergeFromServer(store, serverState as Record<string, unknown>);
       }
     };
 
