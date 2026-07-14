@@ -6,14 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function LoginOverlay() {
-  const { users, registerUser, login, fighters } = useAppStore();
+  const { users, registerUser, login } = useAppStore();
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [registering, setRegistering] = useState(false);
   const [regName, setRegName] = useState('');
   const [regPin, setRegPin] = useState('');
   const [regPin2, setRegPin2] = useState('');
-  const [regFighter, setRegFighter] = useState('');
 
   const handleLogin = () => {
     setError('');
@@ -28,7 +27,7 @@ export function LoginOverlay() {
     if (regPin.length < 3) { setError('ПИН-код должен быть минимум 3 символа'); return; }
     if (regPin !== regPin2) { setError('ПИН-коды не совпадают'); return; }
     if (users.some(u => u.pin === regPin)) { setError('Такой ПИН-код уже занят'); return; }
-    registerUser(regName.trim(), regPin, regFighter || undefined);
+    registerUser(regName.trim(), regPin);
   };
 
   const isFirst = users.length === 0;
@@ -77,15 +76,6 @@ export function LoginOverlay() {
           <div>
             <label className="text-sm font-medium">Повторите ПИН-код</label>
             <Input type="password" value={regPin2} onChange={e => setRegPin2(e.target.value)} placeholder="Повторите" />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Привязать к бойцу (опционально)</label>
-            <select className="w-full rounded-md border p-2 bg-background text-sm" value={regFighter} onChange={e => setRegFighter(e.target.value)}>
-              <option value="">— Не привязывать —</option>
-              {fighters.filter(f => !users.some(u => u.fighterId === f.id)).map(f => (
-                <option key={f.id} value={f.id}>{f.nickname}</option>
-              ))}
-            </select>
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button className="w-full" onClick={handleRegister}>{isFirst ? 'Создать' : 'Зарегистрироваться'}</Button>

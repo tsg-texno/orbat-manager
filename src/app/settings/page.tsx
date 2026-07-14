@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { configureSync, loadSyncConfig, isSyncConfigured } from '@/lib/sync';
 import { generateId } from '@/lib/utils';
@@ -21,6 +22,28 @@ export default function SettingsPage() {
   const [userPin, setUserPin] = useState('');
   const [userFighter, setUserFighter] = useState('');
   const [userRole, setUserRole] = useState('');
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editUserId, setEditUserId] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editPin, setEditPin] = useState('');
+  const [editFighter, setEditFighter] = useState('');
+  const [editRole, setEditRole] = useState('');
+
+  const openEdit = (u: AppUser) => {
+    setEditUserId(u.id); setEditName(u.name); setEditPin(''); setEditFighter(u.fighterId || ''); setEditRole(u.roleIds[0] || '');
+    setEditOpen(true);
+  };
+
+  const handleEditSave = () => {
+    if (!editName.trim() || !editUserId) return;
+    const data: Partial<AppUser> = { name: editName.trim(), fighterId: editFighter || undefined, roleIds: editRole ? [editRole] : [] };
+    if (editPin.trim()) data.pin = editPin.trim();
+    const wasCurrent = user?.id === editUserId;
+    updateUser(editUserId, data);
+    if (editFighter) assignUserToFighter(editUserId, editFighter);
+    setEditOpen(false);
+  };
 
   useEffect(() => {
     const cfg = loadSyncConfig();
@@ -139,16 +162,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <Select value={u.roleIds[0] || 'none'} onValueChange={(v) => {
-                        if (v === 'none' || !v) updateUser(u.id, { roleIds: [] });
-                        else updateUser(u.id, { roleIds: [v] });
-                      }}>
-                        <SelectTrigger className="h-7 text-xs w-28"><SelectValue placeholder="Роль" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">— Нет роли —</SelectItem>
-                          {roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-xs" onClick={() => openEdit(u)}>✏️</Button>
                       {u.id !== user?.id && (
                         <Button variant="ghost" size="sm" className="text-destructive h-7 w-7 p-0 text-xs"
                           onClick={() => { if (confirm(`Удалить пользователя ${u.name}?`)) deleteUser(u.id); }}>✕</Button>
@@ -160,6 +174,38 @@ export default function SettingsPage() {
             </div>
           )}
         </CardContent>
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Редактировать пользователя</DialogTitle></DialogHeader>
+            <div className="space-y-4">
+              <div><Label>Имя / Позывной</Label><Input value={editName} onChange={e => setEditName(e.target.value)} /></div>
+              <div><Label>Новый ПИН-код (оставьте пустым, если не меняете)</Label>
+                <Input type="password" value={editPin} onChange={e => setEditPin(e.target.value)} placeholder="Оставьте пустым" />
+              </div>
+              <div><Label>Привязать к бойцу</Label>
+                <Select value={editFighter} onValueChange={(v) => v && setEditFighter(v === 'none' ? '' : v)}>
+                  <SelectTrigger><SelectValue placeholder="Выберите бойца" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— Не привязан —</SelectItem>
+                    {fighters.filter(f => !users.some(u => u.fighterId === f.id && u.id !== editUserId)).map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.nickname} ({f.status})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div><Label>Роль</Label>
+                <Select value={editRole} onValueChange={(v) => v && setEditRole(v === 'none' ? '' : v)}>
+                  <SelectTrigger><SelectValue placeholder="Выберите роль" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— Нет роли —</SelectItem>
+                    {roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleEditSave} className="w-full">Сохранить</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </Card>
 
       <Card>
