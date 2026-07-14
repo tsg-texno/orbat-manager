@@ -1,3 +1,5 @@
+import { ICON_FILENAMES } from './iconList';
+
 export interface IconEntry {
   filename: string;
   name: string;
@@ -16,13 +18,39 @@ const factionMap: Record<string, 'ru' | 'us' | 'generic'> = {
 };
 
 const categoryMap: Record<string, string> = {
+  // Equipment (Снаряжение) — specific keys first to avoid false matches
   HMG_KORD: 'Снаряжение',
   AGS_17: 'Снаряжение',
+  AGS_30: 'Снаряжение',
+  AGS_40: 'Снаряжение',
+  AGS_AK: 'Снаряжение',
   SPG9: 'Снаряжение',
   PKP: 'Снаряжение',
   JAVELIN: 'Снаряжение',
   FLAMETHROWER: 'Снаряжение',
   TOW: 'Снаряжение',
+  GMG: 'Снаряжение',
+  GROM: 'Снаряжение',
+  MILAN: 'Снаряжение',
+  PIORUN: 'Снаряжение',
+  RBS70: 'Снаряжение',
+  SMAW: 'Снаряжение',
+  DRAGON: 'Снаряжение',
+  MK19: 'Снаряжение',
+  STINGER: 'Снаряжение',
+  SPIKE: 'Снаряжение',
+  IRIST: 'Снаряжение',
+  NASAMS: 'ПВО',
+  ZU_23: 'Снаряжение',
+  NSV: 'Снаряжение',
+  ALBATROS: 'Авиация',
+  SPARTAN: 'Снаряжение',
+  KASP: 'Снаряжение',
+  M2_GMG: 'Снаряжение',
+  TGB_RBS: 'Снаряжение',
+  TGB_1111: 'Снаряжение',
+  UNIMOG: 'БТР',
+  // Vehicles
   TANK: 'Танк',
   BMP: 'БМП',
   BMD: 'БМД',
@@ -79,7 +107,6 @@ const categoryMap: Record<string, string> = {
   METIS: 'ПТРК',
   FAGOT: 'ПТРК',
   RPG: 'ПТРК',
-
   STURM: 'ПТРК',
   KORD: 'ПВО',
   IGLA: 'ПВО',
@@ -167,6 +194,7 @@ const categoryMap: Record<string, string> = {
   AC130: 'Авиация',
   E6: 'Авиация',
   EA6: 'Авиация',
+  L39: 'Авиация',
   MQ: 'БПЛА',
   RQ: 'БПЛА',
   ORION: 'БПЛА',
@@ -211,7 +239,7 @@ const categoryMap: Record<string, string> = {
 };
 
 export function mapIconFilename(filename: string): IconEntry {
-  const withoutExt = filename.replace(/\.(png|svg|webp)$/i, '').replace(/-Label$/, '');
+  const withoutExt = filename.replace(/\.(png|svg|webp)$/i, '').replace(/-Label$/i, '');
   let faction: IconEntry['faction'] = 'generic';
   for (const [prefix, f] of Object.entries(factionMap)) {
     if (withoutExt.startsWith(prefix)) { faction = f; break; }
@@ -236,52 +264,7 @@ export function mapIconFilename(filename: string): IconEntry {
 }
 
 export function getAllIcons(): IconEntry[] {
-  const iconNames = [
-    "BALLOON-Label.png", "BALT_LEO2A7_TRAIN-Label.png", "BALT_LEO2A7-Label.png",
-    "BLT_CV9035-Label.png", "BLT_EST_SCOUTS-Label.png", "BLT_GELEZINIS-Label.png",
-    "BLT_JAGER-Label.png", "BLT_JALAVAE-Label.png", "BLT_MEHANIZETIE-Label.png",
-    "BLT_PZH2000-Label.png", "BLT_RARDEN-Label.png", "BLT_RESERVISTS-Label.png",
-    "BLT_SNIPER-Label.png", "BLT_SPIKE_SR-Label.png", "BLT_SPIKE-Label.png",
-    "BLT_UNIMOG-Label.png", "BLT_VILKAS-Label.png", "BLT_XA180-Label.png",
-    "GENERIC_INFANTRY-Label.png", "GENERIC_RECON-Label.png", "GENERIC_RIFLEMEN-Label.png",
-    "GENERIC_SNIPER-Label.png", "OFFICER-Label.png", "PLACEHOLDER-Label.png",
-    "VIP-Label.png", "supply-Label.png",
-    "US_A10-Label.png", "US_ABRAMS-Label.png", "US_AH_1Z-Label.png",
-    "US_AH64_APACHE-Label.png", "US_AH64_LONGBOW-Label.png",
-    "US_BRADLEY_A2-Label.png", "US_BRADLEY_A3-Label.png",
-    "US_CH47-Label.png", "US_F16_BLOCK52-Label.png", "US_F22-Label.png",
-    "US_F35-Label.png", "US_HIMARS-Label.png", "US_HUMVEE-Label.png",
-    "US_JAVELIN-Label.png", "US_JLTV-Label.png", "US_M1A2_SEPV3-Label.png",
-    "US_M109_PALADIN-Label.png", "US_M2-Label.png", "US_PATRIOT_PAC3-Label.png",
-    "US_RANGER-Label.png", "US_STRYKER_ICV-Label.png", "US_UH60-Label.png",
-    "US_UH60M-Label.png", "US_MARINES-Label.png", "US_NAVY_SEALS-Label.png",
-    "US_DELTA_FORCE-Label.png", "US_PARATROOPERS-Label.png",
-    "RU_AGS_17-Label.png", "RU_BMD_2-Label.png", "RU_BMD_4-Label.png",
-    "RU_BMP2-Label.png", "RU_BMP3-Label.png", "RU_BTR80-Label.png",
-    "RU_BTR82-Label.png", "RU_BTR82_AT-Label.png", "RU_BTRD-Label.png",
-    "RU_BTR_MDM-Label.png", "RU_IGLA-Label.png", "RU_KA52-Label.png",
-    "RU_KONKURS-Label.png", "RU_KORNET-Label.png", "RU_METIS-Label.png",
-    "RU_MI8_AMTSH-Label.png", "RU_MI24-Label.png", "RU_MI28N-Label.png",
-    "RU_MSTA-Label.png", "RU_PANTSIR-Label.png", "RU_SHILKA-Label.png",
-    "RU_SPRUT_SD-Label.png", "RU_T72B-Label.png", "RU_T80_BVM-Label.png",
-    "RU_T90A-Label.png", "RU_T90M-Label.png", "RU_T14-Label.png",
-    "RU_T15-Label.png", "RU_TOS-Label.png", "RU_TUNGUSKA-Label.png",
-    "RU_URAGAN_1M-Label.png", "RU_VDV_PARA-Label.png", "RU_VDV_RAZVEDKA-Label.png",
-    "RU_VDV_SNIPER-Label.png", "RU_MOTOSTRELKI-Label.png", "RU_BUK_M3-Label.png",
-    "RU_S400-Label.png", "RU_TOR-Label.png", "RU_KURGANETS-Label.png",
-    "RU_BTR90-Label.png", "RU_BTR97_KORD-Label.png", "RU_BMD2_KONKURS-Label.png",
-    "RU_BMD2_KORNET-Label.png", "RU_PKP-Label.png", "RU_BLACK_BERET-Label.png",
-    "RU_FLAMETHROWER-Label.png", "RU_HMG_KORD-Label.png", "RU_SNAIPERY_ASVK-Label.png",
-    "RU_RPG29-Label.png", "RU_SPG9-Label.png", "RU_SPECNAZ_GRU-Label.png",
-    "RU_SPECNAZ_VDV-Label.png", "RU_SSO-Label.png", "RU_PILOT-Label.png",
-    "RU_TANK_CREW-Label.png", "RU_TYPHOON_VDV_KORD-Label.png",
-    "RU_KAMAZ_6560-Label.png", "RU_URAL_4320-Label.png",
-    "DLC2_CV9035_SPIKE-Label.png", "DLC2_LEO2A8-Label.png",
-    "DLC2_PZH2000-label.png", "DLC2_UH60M-label.png",
-    "DLC2_XA180-label.png", "DLC2_M2-label.png",
-    "WOMAN_SNIPER-Label.png", "ZMB_CIVILIANS-Label.png", "ZMB_POLICE-Label.png",
-  ];
-  return iconNames.map(mapIconFilename);
+  return ICON_FILENAMES.map(mapIconFilename);
 }
 
 export function getIconsByCategory(category: string): IconEntry[] {

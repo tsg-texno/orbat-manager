@@ -356,42 +356,32 @@
   ],
   "vehicleTypes": [
     {
-      "id": "1783960873217-2gzj4v3",
-      "name": "БТР-82А",
-      "model": "БТР-82А",
-      "faction": "ru",
-      "category": "БТР",
-      "icon": "RU_BTR82-Label.png",
-      "matchPatterns": [
-        "БТР-82А",
-        "БТР-82"
-      ]
-    },
-    {
-      "id": "1783960873217-zj77ar7",
-      "name": "БТР-80",
-      "model": "БТР-80",
-      "faction": "ru",
-      "category": "БТР",
-      "icon": "RU_BTR80-Label.png",
-      "matchPatterns": [
-        "БТР-80"
-      ]
-    },
-    {
-      "id": "1783960873217-8obc2yv",
-      "name": "Т-90М",
-      "model": "Т-90М",
+      "id": "seed---90-",
+      "name": "Т-90А",
+      "model": "Т-90А",
       "faction": "ru",
       "category": "Танк",
-      "icon": "RU_T90M-Label.png",
+      "icon": "RU_T90A-Label.png",
       "matchPatterns": [
-        "Т-90М",
-        "Т-90"
+        "Т-90А",
+        "Т90"
       ]
     },
     {
-      "id": "1783960873217-pfxiqg5",
+      "id": "seed---80-",
+      "name": "Т-80У",
+      "model": "Т-80У",
+      "faction": "ru",
+      "category": "Танк",
+      "icon": "RU_T80_BVM-Label.png",
+      "matchPatterns": [
+        "Т-80",
+        "Т-80У",
+        "Т80"
+      ]
+    },
+    {
+      "id": "seed---72-",
       "name": "Т-72Б",
       "model": "Т-72Б",
       "faction": "ru",
@@ -399,83 +389,12 @@
       "icon": "RU_T72B-Label.png",
       "matchPatterns": [
         "Т-72Б",
-        "Т-72"
+        "Т-72",
+        "Т72"
       ]
     },
     {
-      "id": "1783960873217-1ua0s8i",
-      "name": "БМД-4",
-      "model": "БМД-4",
-      "faction": "ru",
-      "category": "БМД",
-      "icon": "RU_BMD_4-Label.png",
-      "matchPatterns": [
-        "БМД-4",
-        "БМД4"
-      ]
-    },
-    {
-      "id": "1783960873217-pk027a1",
-      "name": "БМД-2",
-      "model": "БМД-2",
-      "faction": "ru",
-      "category": "БМД",
-      "icon": "RU_BMD_2-Label.png",
-      "matchPatterns": [
-        "БМД-2",
-        "БМД2"
-      ]
-    },
-    {
-      "id": "1783960873217-gdqs06w",
-      "name": "БМП-2",
-      "model": "БМП-2",
-      "faction": "ru",
-      "category": "БМП",
-      "icon": "RU_BMP2-Label.png",
-      "matchPatterns": [
-        "БМП-2",
-        "БМП2"
-      ]
-    },
-    {
-      "id": "1783960873217-yf8gnzu",
-      "name": "БМП-3",
-      "model": "БМП-3",
-      "faction": "ru",
-      "category": "БМП",
-      "icon": "RU_BMP3-Label.png",
-      "matchPatterns": [
-        "БМП-3",
-        "БМП3"
-      ]
-    },
-    {
-      "id": "1783960873217-bqy8ek4",
-      "name": "Ка-52",
-      "model": "Ка-52",
-      "faction": "ru",
-      "category": "Вертолёт",
-      "icon": "RU_KA52-Label.png",
-      "matchPatterns": [
-        "Ка-52",
-        "КА-52"
-      ]
-    },
-    {
-      "id": "1783960873217-w6ooxq9",
-      "name": "Ми-8",
-      "model": "Ми-8",
-      "faction": "ru",
-      "category": "Вертолёт",
-      "icon": "RU_MI8_AMTSH-Label.png",
-      "matchPatterns": [
-        "Ми-8",
-        "МИ-8"
-      ]
-    },
-    {
-      "id": "1783960873217-7g70qbf",
+      "id": "seed---14-------",
       "name": "Т-14 Армата",
       "model": "Т-14",
       "faction": "ru",
@@ -487,31 +406,172 @@
       ]
     },
     {
-      "id": "1783960873217-9a9jiog",
-      "name": "Панцирь-С1",
-      "model": "Панцирь-С1",
+      "id": "seed-----2",
+      "name": "БМП-2",
+      "model": "БМП-2",
       "faction": "ru",
-      "category": "ПВО",
-      "icon": "RU_PANTSIR-Label.png",
+      "category": "БМП",
+      "icon": "RU_BMP2-Label.png",
       "matchPatterns": [
-        "Панцирь",
-        "Панцирь-С1"
+        "БМП-2",
+        "БМП2"
       ]
     },
     {
-      "id": "1783960873217-n4id9ns",
-      "name": "Тор-М2",
-      "model": "Тор-М2",
+      "id": "seed-----3",
+      "name": "БМП-3",
+      "model": "БМП-3",
       "faction": "ru",
-      "category": "ПВО",
-      "icon": "RU_TOR-Label.png",
+      "category": "БМП",
+      "icon": "RU_BMP3-Label.png",
       "matchPatterns": [
-        "Тор",
-        "Тор-М2"
+        "БМП-3",
+        "БМП3"
       ]
     },
     {
-      "id": "1783960873217-wfhncr8",
+      "id": "seed-----",
+      "name": "БМПТ",
+      "model": "БМПТ",
+      "faction": "ru",
+      "category": "БМП",
+      "icon": "RU_BMPT-Label.png",
+      "matchPatterns": [
+        "БМПТ",
+        "Терминатор"
+      ]
+    },
+    {
+      "id": "seed-----2",
+      "name": "БМД-2",
+      "model": "БМД-2",
+      "faction": "ru",
+      "category": "БМД",
+      "icon": "RU_BMD_2-Label.png",
+      "matchPatterns": [
+        "БМД-2",
+        "БМД2"
+      ]
+    },
+    {
+      "id": "seed-----4",
+      "name": "БМД-4",
+      "model": "БМД-4",
+      "faction": "ru",
+      "category": "БМД",
+      "icon": "RU_BMD_4-Label.png",
+      "matchPatterns": [
+        "БМД-4",
+        "БМД4"
+      ]
+    },
+    {
+      "id": "seed-----82-",
+      "name": "БТР-82А",
+      "model": "БТР-82А",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTR82-Label.png",
+      "matchPatterns": [
+        "БТР-82А",
+        "БТР-82"
+      ]
+    },
+    {
+      "id": "seed-----80",
+      "name": "БТР-80",
+      "model": "БТР-80",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTR80-Label.png",
+      "matchPatterns": [
+        "БТР-80"
+      ]
+    },
+    {
+      "id": "seed-----90",
+      "name": "БТР-90",
+      "model": "БТР-90",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTR90-Label.png",
+      "matchPatterns": [
+        "БТР-90"
+      ]
+    },
+    {
+      "id": "seed------",
+      "name": "БТР-Д",
+      "model": "БТР-Д",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTRD-Label.png",
+      "matchPatterns": [
+        "БТР-Д",
+        "БТРД"
+      ]
+    },
+    {
+      "id": "seed--------",
+      "name": "БТР-МДМ",
+      "model": "БТР-МДМ",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_BTR_MDM-Label.png",
+      "matchPatterns": [
+        "БТР-МДМ",
+        "БТР МДМ"
+      ]
+    },
+    {
+      "id": "seed---------",
+      "name": "Курганец",
+      "model": "Курганец",
+      "faction": "ru",
+      "category": "БМП",
+      "icon": "RU_KURGANETS-Label.png",
+      "matchPatterns": [
+        "Курганец"
+      ]
+    },
+    {
+      "id": "seed-----",
+      "name": "Тигр",
+      "model": "Тигр",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_GAZ_TIGR-Label.png",
+      "matchPatterns": [
+        "Тигр",
+        "ГАЗ Тигр"
+      ]
+    },
+    {
+      "id": "seed-------",
+      "name": "Тайфун",
+      "model": "Тайфун",
+      "faction": "ru",
+      "category": "БТР",
+      "icon": "RU_TYPHOON_VDV_KORD-Label.png",
+      "matchPatterns": [
+        "Тайфун"
+      ]
+    },
+    {
+      "id": "seed---------",
+      "name": "Спрут-СД",
+      "model": "Спрут-СД",
+      "faction": "ru",
+      "category": "САУ",
+      "icon": "RU_SPRUT_SD-Label.png",
+      "matchPatterns": [
+        "Спрут",
+        "Спрут-СД",
+        "2С25"
+      ]
+    },
+    {
+      "id": "seed-------",
       "name": "Мста-С",
       "model": "Мста-С",
       "faction": "ru",
@@ -519,11 +579,36 @@
       "icon": "RU_MSTA-Label.png",
       "matchPatterns": [
         "Мста",
-        "Мста-С"
+        "Мста-С",
+        "2С19"
       ]
     },
     {
-      "id": "1783960873217-cjqpqus",
+      "id": "seed---------",
+      "name": "Гвоздика",
+      "model": "Гвоздика",
+      "faction": "ru",
+      "category": "Артиллерия",
+      "icon": "RU_2S1_GVOZDIKA-Label.png",
+      "matchPatterns": [
+        "Гвоздика",
+        "2С1"
+      ]
+    },
+    {
+      "id": "seed-------",
+      "name": "Акация",
+      "model": "Акация",
+      "faction": "ru",
+      "category": "Артиллерия",
+      "icon": "RU_2S3_AKACIYA-Label.png",
+      "matchPatterns": [
+        "Акация",
+        "2С3"
+      ]
+    },
+    {
+      "id": "seed-------",
       "name": "Ураган",
       "model": "Ураган",
       "faction": "ru",
@@ -535,7 +620,7 @@
       ]
     },
     {
-      "id": "1783960873217-vzu7qxo",
+      "id": "seed-----1",
       "name": "ТОС-1",
       "model": "ТОС-1",
       "faction": "ru",
@@ -543,7 +628,754 @@
       "icon": "RU_TOS-Label.png",
       "matchPatterns": [
         "ТОС",
+        "ТОС-1",
         "Солнцепек"
+      ]
+    },
+    {
+      "id": "seed---------",
+      "name": "Искандер",
+      "model": "Искандер",
+      "faction": "ru",
+      "category": "Артиллерия",
+      "icon": "RU_ISKANDER_K-Label.png",
+      "matchPatterns": [
+        "Искандер"
+      ]
+    },
+    {
+      "id": "seed----------1",
+      "name": "Панцирь-С1",
+      "model": "Панцирь-С1",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_PANTSIR-Label.png",
+      "matchPatterns": [
+        "Панцирь",
+        "Панцирь-С1"
+      ]
+    },
+    {
+      "id": "seed---------",
+      "name": "Тунгуска",
+      "model": "Тунгуска",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_TUNGUSKA-Label.png",
+      "matchPatterns": [
+        "Тунгуска",
+        "2С6"
+      ]
+    },
+    {
+      "id": "seed------",
+      "name": "Шилка",
+      "model": "Шилка",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_SHILKA-Label.png",
+      "matchPatterns": [
+        "Шилка",
+        "ЗСУ-23-4"
+      ]
+    },
+    {
+      "id": "seed------2",
+      "name": "Тор-М2",
+      "model": "Тор-М2",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_TOR-Label.png",
+      "matchPatterns": [
+        "Тор",
+        "Тор-М2"
+      ]
+    },
+    {
+      "id": "seed------3",
+      "name": "Бук-М3",
+      "model": "Бук-М3",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_BUK_M3-Label.png",
+      "matchPatterns": [
+        "Бук",
+        "Бук-М3"
+      ]
+    },
+    {
+      "id": "seed---400",
+      "name": "С-400",
+      "model": "С-400",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_S400-Label.png",
+      "matchPatterns": [
+        "С-400",
+        "Триумф"
+      ]
+    },
+    {
+      "id": "seed----52",
+      "name": "Ка-52",
+      "model": "Ка-52",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_KA52-Label.png",
+      "matchPatterns": [
+        "Ка-52",
+        "Аллигатор"
+      ]
+    },
+    {
+      "id": "seed----50",
+      "name": "Ка-50",
+      "model": "Ка-50",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_KA50-Label.png",
+      "matchPatterns": [
+        "Ка-50",
+        "Черная Акула"
+      ]
+    },
+    {
+      "id": "seed----28-",
+      "name": "Ми-28Н",
+      "model": "Ми-28Н",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_MI28N-Label.png",
+      "matchPatterns": [
+        "Ми-28",
+        "Ночной Охотник"
+      ]
+    },
+    {
+      "id": "seed----24",
+      "name": "Ми-24",
+      "model": "Ми-24",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_MI24-Label.png",
+      "matchPatterns": [
+        "Ми-24",
+        "Ми-35"
+      ]
+    },
+    {
+      "id": "seed----8",
+      "name": "Ми-8",
+      "model": "Ми-8",
+      "faction": "ru",
+      "category": "Вертолёт",
+      "icon": "RU_MI8_AMTSH-Label.png",
+      "matchPatterns": [
+        "Ми-8",
+        "МИ-8",
+        "Ми-17"
+      ]
+    },
+    {
+      "id": "seed----25",
+      "name": "Су-25",
+      "model": "Су-25",
+      "faction": "ru",
+      "category": "Авиация",
+      "icon": "RU_SU25-Label.png",
+      "matchPatterns": [
+        "Су-25",
+        "Грач"
+      ]
+    },
+    {
+      "id": "seed----34",
+      "name": "Су-34",
+      "model": "Су-34",
+      "faction": "ru",
+      "category": "Авиация",
+      "icon": "RU_SU34-Label.png",
+      "matchPatterns": [
+        "Су-34"
+      ]
+    },
+    {
+      "id": "seed----35",
+      "name": "Су-35",
+      "model": "Су-35",
+      "faction": "ru",
+      "category": "Авиация",
+      "icon": "RU_SU35S-Label.png",
+      "matchPatterns": [
+        "Су-35",
+        "Су-35С"
+      ]
+    },
+    {
+      "id": "seed----57",
+      "name": "Су-57",
+      "model": "Су-57",
+      "faction": "ru",
+      "category": "Авиация",
+      "icon": "RU_SU57-Label.png",
+      "matchPatterns": [
+        "Су-57"
+      ]
+    },
+    {
+      "id": "seed-m1a2-abrams",
+      "name": "M1A2 Abrams",
+      "model": "M1A2 Abrams",
+      "faction": "us",
+      "category": "Танк",
+      "icon": "US_ABRAMS-Label.png",
+      "matchPatterns": [
+        "Abrams",
+        "M1A2",
+        "Абрамс"
+      ]
+    },
+    {
+      "id": "seed-m2a3-bradley",
+      "name": "M2A3 Bradley",
+      "model": "M2A3 Bradley",
+      "faction": "us",
+      "category": "БМП",
+      "icon": "US_BRADLEY_A3-Label.png",
+      "matchPatterns": [
+        "Bradley",
+        "Брэдли"
+      ]
+    },
+    {
+      "id": "seed-stryker",
+      "name": "Stryker",
+      "model": "Stryker ICV",
+      "faction": "us",
+      "category": "БТР",
+      "icon": "US_STRYKER_ICV-Label.png",
+      "matchPatterns": [
+        "Stryker",
+        "Страйкер"
+      ]
+    },
+    {
+      "id": "seed-lav-25",
+      "name": "LAV-25",
+      "model": "LAV-25",
+      "faction": "us",
+      "category": "БТР",
+      "icon": "US_LAV25-Label.png",
+      "matchPatterns": [
+        "LAV-25"
+      ]
+    },
+    {
+      "id": "seed-acv",
+      "name": "ACV",
+      "model": "ACV",
+      "faction": "us",
+      "category": "БТР",
+      "icon": "US_ACV-Label.png",
+      "matchPatterns": [
+        "ACV"
+      ]
+    },
+    {
+      "id": "seed-m1126",
+      "name": "M1126",
+      "model": "M1126 Stryker",
+      "faction": "us",
+      "category": "БТР",
+      "icon": "US_STRYKER_ICV-Label.png",
+      "matchPatterns": [
+        "M1126",
+        "Stryker ICV"
+      ]
+    },
+    {
+      "id": "seed-hmmwv",
+      "name": "HMMWV",
+      "model": "HMMWV",
+      "faction": "us",
+      "category": "БТР",
+      "icon": "US_HUMVEE-Label.png",
+      "matchPatterns": [
+        "HMMWV",
+        "Хамви",
+        "Humvee"
+      ]
+    },
+    {
+      "id": "seed-jltv",
+      "name": "JLTV",
+      "model": "JLTV",
+      "faction": "us",
+      "category": "БТР",
+      "icon": "US_JLTV-Label.png",
+      "matchPatterns": [
+        "JLTV"
+      ]
+    },
+    {
+      "id": "seed-m109-paladin",
+      "name": "M109 Paladin",
+      "model": "M109 Paladin",
+      "faction": "us",
+      "category": "Артиллерия",
+      "icon": "US_M109_PALADIN-Label.png",
+      "matchPatterns": [
+        "M109",
+        "Paladin",
+        "Паладин"
+      ]
+    },
+    {
+      "id": "seed-m270-mlrs",
+      "name": "M270 MLRS",
+      "model": "M270 MLRS",
+      "faction": "us",
+      "category": "Артиллерия",
+      "icon": "US_M270A2-Label.png",
+      "matchPatterns": [
+        "M270",
+        "MLRS",
+        "HIMARS"
+      ]
+    },
+    {
+      "id": "seed-himars",
+      "name": "HIMARS",
+      "model": "HIMARS",
+      "faction": "us",
+      "category": "Артиллерия",
+      "icon": "US_HIMARS-Label.png",
+      "matchPatterns": [
+        "HIMARS"
+      ]
+    },
+    {
+      "id": "seed-patriot",
+      "name": "Patriot",
+      "model": "Patriot PAC-3",
+      "faction": "us",
+      "category": "ПВО",
+      "icon": "US_PATRIOT_PAC3-Label.png",
+      "matchPatterns": [
+        "Patriot",
+        "Пэтриот"
+      ]
+    },
+    {
+      "id": "seed-avenger",
+      "name": "Avenger",
+      "model": "Avenger",
+      "faction": "us",
+      "category": "ПВО",
+      "icon": "US_HUMVEE_AVENGER-Label.png",
+      "matchPatterns": [
+        "Avenger",
+        "Авенджер"
+      ]
+    },
+    {
+      "id": "seed-thaad",
+      "name": "THAAD",
+      "model": "THAAD",
+      "faction": "us",
+      "category": "ПВО",
+      "icon": "US_THAAD-Label.png",
+      "matchPatterns": [
+        "THAAD"
+      ]
+    },
+    {
+      "id": "seed-cram",
+      "name": "CRAM",
+      "model": "CRAM",
+      "faction": "us",
+      "category": "ПВО",
+      "icon": "US_CRAM-Label.png",
+      "matchPatterns": [
+        "CRAM"
+      ]
+    },
+    {
+      "id": "seed-ah-64-apache",
+      "name": "AH-64 Apache",
+      "model": "AH-64 Apache",
+      "faction": "us",
+      "category": "Вертолёт",
+      "icon": "US_AH64_APACHE-Label.png",
+      "matchPatterns": [
+        "Apache",
+        "Апач"
+      ]
+    },
+    {
+      "id": "seed-ah-1z-viper",
+      "name": "AH-1Z Viper",
+      "model": "AH-1Z Viper",
+      "faction": "us",
+      "category": "Вертолёт",
+      "icon": "US_AH_1Z-Label.png",
+      "matchPatterns": [
+        "AH-1",
+        "Viper",
+        "Вайпер"
+      ]
+    },
+    {
+      "id": "seed-uh-60-black-hawk",
+      "name": "UH-60 Black Hawk",
+      "model": "UH-60 Black Hawk",
+      "faction": "us",
+      "category": "Вертолёт",
+      "icon": "US_UH60-Label.png",
+      "matchPatterns": [
+        "UH-60",
+        "Black Hawk",
+        "Блэк Хок"
+      ]
+    },
+    {
+      "id": "seed-ch-47-chinook",
+      "name": "CH-47 Chinook",
+      "model": "CH-47 Chinook",
+      "faction": "us",
+      "category": "Вертолёт",
+      "icon": "US_CH47-Label.png",
+      "matchPatterns": [
+        "CH-47",
+        "Chinook",
+        "Чинук"
+      ]
+    },
+    {
+      "id": "seed-a-10-thunderbolt",
+      "name": "A-10 Thunderbolt",
+      "model": "A-10 Thunderbolt",
+      "faction": "us",
+      "category": "Авиация",
+      "icon": "US_A10-Label.png",
+      "matchPatterns": [
+        "A-10",
+        "Тандерболт"
+      ]
+    },
+    {
+      "id": "seed-f-16-fighting-falcon",
+      "name": "F-16 Fighting Falcon",
+      "model": "F-16 Fighting Falcon",
+      "faction": "us",
+      "category": "Авиация",
+      "icon": "US_F16_BLOCK52-Label.png",
+      "matchPatterns": [
+        "F-16",
+        "Файтинг Фалкон"
+      ]
+    },
+    {
+      "id": "seed-f-35-lightning",
+      "name": "F-35 Lightning",
+      "model": "F-35 Lightning",
+      "faction": "us",
+      "category": "Авиация",
+      "icon": "US_F35-Label.png",
+      "matchPatterns": [
+        "F-35",
+        "Лайтнинг"
+      ]
+    },
+    {
+      "id": "seed-f-22-raptor",
+      "name": "F-22 Raptor",
+      "model": "F-22 Raptor",
+      "faction": "us",
+      "category": "Авиация",
+      "icon": "US_F22-Label.png",
+      "matchPatterns": [
+        "F-22",
+        "Раптор"
+      ]
+    },
+    {
+      "id": "seed-----17",
+      "name": "АГС-17",
+      "model": "АГС-17",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_AGS_17-Label.png",
+      "matchPatterns": [
+        "АГС-17",
+        "АГС"
+      ]
+    },
+    {
+      "id": "seed-----30",
+      "name": "АГС-30",
+      "model": "АГС-30",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_AGS_30-Label.png",
+      "matchPatterns": [
+        "АГС-30"
+      ]
+    },
+    {
+      "id": "seed-----40",
+      "name": "АГС-40",
+      "model": "АГС-40",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_AGS_40-Label.png",
+      "matchPatterns": [
+        "АГС-40"
+      ]
+    },
+    {
+      "id": "seed-----9",
+      "name": "СПГ-9",
+      "model": "СПГ-9",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_SPG9-Label.png",
+      "matchPatterns": [
+        "СПГ-9",
+        "СПГ"
+      ]
+    },
+    {
+      "id": "seed----",
+      "name": "ПКП",
+      "model": "ПКП",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_PKP-Label.png",
+      "matchPatterns": [
+        "ПКП",
+        "Пулемет ПКП"
+      ]
+    },
+    {
+      "id": "seed---------",
+      "name": "НСВ Корд",
+      "model": "НСВ Корд",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_HMG_KORD-Label.png",
+      "matchPatterns": [
+        "НСВ",
+        "Корд",
+        "НСВ Корд",
+        "Корд ПВО"
+      ]
+    },
+    {
+      "id": "seed-----29",
+      "name": "РПГ-29",
+      "model": "РПГ-29",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_RPG29-Label.png",
+      "matchPatterns": [
+        "РПГ-29",
+        "РПГ"
+      ]
+    },
+    {
+      "id": "seed--------",
+      "name": "Огнемёт",
+      "model": "Огнемёт",
+      "faction": "ru",
+      "category": "Снаряжение",
+      "icon": "RU_FLAMETHROWER-Label.png",
+      "matchPatterns": [
+        "Огнемёт",
+        "Flamethrower",
+        "РПО"
+      ]
+    },
+    {
+      "id": "seed--------",
+      "name": "Конкурс",
+      "model": "Конкурс",
+      "faction": "ru",
+      "category": "ПТРК",
+      "icon": "RU_KONKURS-Label.png",
+      "matchPatterns": [
+        "Конкурс",
+        "ПТРК Конкурс"
+      ]
+    },
+    {
+      "id": "seed-------",
+      "name": "Корнет",
+      "model": "Корнет",
+      "faction": "ru",
+      "category": "ПТРК",
+      "icon": "RU_KORNET-Label.png",
+      "matchPatterns": [
+        "Корнет",
+        "ПТРК Корнет"
+      ]
+    },
+    {
+      "id": "seed------",
+      "name": "Метис",
+      "model": "Метис",
+      "faction": "ru",
+      "category": "ПТРК",
+      "icon": "RU_METIS-Label.png",
+      "matchPatterns": [
+        "Метис",
+        "ПТРК Метис"
+      ]
+    },
+    {
+      "id": "seed------",
+      "name": "Фагот",
+      "model": "Фагот",
+      "faction": "ru",
+      "category": "ПТРК",
+      "icon": "RU_FAGOT-Label.png",
+      "matchPatterns": [
+        "Фагот",
+        "ПТРК Фагот"
+      ]
+    },
+    {
+      "id": "seed----------",
+      "name": "ПЗРК Игла",
+      "model": "Игла",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_IGLA-Label.png",
+      "matchPatterns": [
+        "Игла",
+        "ПЗРК Игла",
+        "Игла-С"
+      ]
+    },
+    {
+      "id": "seed------------",
+      "name": "ПЗРК Стрела",
+      "model": "Стрела",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_STRELA10M-Label.png",
+      "matchPatterns": [
+        "Стрела",
+        "ПЗРК Стрела",
+        "Стрела-10"
+      ]
+    },
+    {
+      "id": "seed-----------",
+      "name": "ПЗРК Верба",
+      "model": "Верба",
+      "faction": "ru",
+      "category": "ПВО",
+      "icon": "RU_VERBA-Label.png",
+      "matchPatterns": [
+        "Верба",
+        "ПЗРК Верба"
+      ]
+    },
+    {
+      "id": "seed-javelin",
+      "name": "Javelin",
+      "model": "FGM-148 Javelin",
+      "faction": "us",
+      "category": "Снаряжение",
+      "icon": "US_JAVELIN-Label.png",
+      "matchPatterns": [
+        "Javelin",
+        "Джавелин"
+      ]
+    },
+    {
+      "id": "seed-tow",
+      "name": "TOW",
+      "model": "BGM-71 TOW",
+      "faction": "us",
+      "category": "Снаряжение",
+      "icon": "US_TOW2-Label.png",
+      "matchPatterns": [
+        "TOW",
+        "ТОУ"
+      ]
+    },
+    {
+      "id": "seed-mk19",
+      "name": "Mk19",
+      "model": "Mk19",
+      "faction": "us",
+      "category": "Снаряжение",
+      "icon": "US_MK19-Label.png",
+      "matchPatterns": [
+        "Mk19",
+        "Мк19"
+      ]
+    },
+    {
+      "id": "seed-m2-hmg",
+      "name": "M2 HMG",
+      "model": "M2 Browning",
+      "faction": "us",
+      "category": "Снаряжение",
+      "icon": "US_M2-Label.png",
+      "matchPatterns": [
+        "M2",
+        "Браунинг",
+        "M2 HMG"
+      ]
+    },
+    {
+      "id": "seed-m224",
+      "name": "M224",
+      "model": "M224",
+      "faction": "us",
+      "category": "Артиллерия",
+      "icon": "US_M240_JAVELIN-Label.png",
+      "matchPatterns": [
+        "M224",
+        "Миномет"
+      ]
+    },
+    {
+      "id": "seed-stinger",
+      "name": "Stinger",
+      "model": "FIM-92 Stinger",
+      "faction": "us",
+      "category": "ПВО",
+      "icon": "US_STINGER-Label.png",
+      "matchPatterns": [
+        "Stinger",
+        "Стингер"
+      ]
+    },
+    {
+      "id": "seed-smaw",
+      "name": "SMAW",
+      "model": "SMAW",
+      "faction": "us",
+      "category": "Снаряжение",
+      "icon": "US_SMAW_TEAM-Label.png",
+      "matchPatterns": [
+        "SMAW"
+      ]
+    },
+    {
+      "id": "seed-dragon",
+      "name": "Dragon",
+      "model": "M47 Dragon",
+      "faction": "us",
+      "category": "Снаряжение",
+      "icon": "US_DRAGON-Label.png",
+      "matchPatterns": [
+        "Dragon",
+        "Дракон"
       ]
     }
   ],
