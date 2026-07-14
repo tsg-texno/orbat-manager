@@ -23,7 +23,10 @@ export function loadSyncConfig() {
 }
 
 export function isSyncConfigured(): boolean {
-  return !!botToken && !!chatId;
+  if (typeof window === 'undefined') return false;
+  const tk = localStorage.getItem('orbat_telegram_token');
+  const ch = localStorage.getItem('orbat_telegram_chat');
+  return !!tk && !!ch;
 }
 
 export async function pushDeltas(deltas: SyncDelta[]): Promise<boolean> {
