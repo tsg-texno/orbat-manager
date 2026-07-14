@@ -7,16 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { configureSync, loadSyncConfig, isSyncConfigured } from '@/lib/sync';
 import { generateId } from '@/lib/utils';
 import type { AppUser } from '@/lib/types';
 
 export default function SettingsPage() {
-  const { user, setUser, fighters, roles, assignUserToFighter, syncEnabled, setSyncEnabled, offlineMode, setOfflineMode, pendingDeltas, lastSyncTimestamp, importState } = useAppStore();
+  const { user, users, setUser, updateUser, deleteUser, logout, fighters, roles, assignUserToFighter, syncEnabled, setSyncEnabled, offlineMode, setOfflineMode, pendingDeltas, lastSyncTimestamp, importState } = useAppStore();
 
   const [botToken, setBotToken] = useState('');
   const [chatId, setChatId] = useState('');
   const [userName, setUserName] = useState('');
+  const [userPin, setUserPin] = useState('');
   const [userFighter, setUserFighter] = useState('');
   const [userRole, setUserRole] = useState('');
 
@@ -26,6 +28,7 @@ export default function SettingsPage() {
     setChatId(cfg.chatId);
     if (user) {
       setUserName(user.name);
+      setUserPin(user.pin || '');
       setUserFighter(user.fighterId || '');
       setUserRole(user.roleIds[0] || '');
     }
@@ -37,17 +40,16 @@ export default function SettingsPage() {
 
   const handleSaveUser = () => {
     if (!userName.trim()) return;
-    const newUser: AppUser = {
-      id: user?.id || generateId(),
+    const updated: Partial<AppUser> = {
       name: userName.trim(),
+      pin: userPin || user?.pin,
       fighterId: userFighter || undefined,
       roleIds: userRole ? [userRole] : [],
-      telegramChatId: chatId || user?.telegramChatId,
-      telegramRegistered: !!chatId,
-      lastSyncTimestamp: user?.lastSyncTimestamp || 0,
     };
-    setUser(newUser);
-    if (userFighter) assignUserToFighter(newUser.id, userFighter);
+    if (user) {
+      updateUser(user.id, updated);
+      if (userFighter) assignUserToFighter(user.id, userFighter);
+    }
   };
 
   const handleExport = () => {
@@ -89,12 +91,15 @@ export default function SettingsPage() {
         <CardHeader><CardTitle>Профиль пользователя</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div><Label>Имя / Позывной</Label><Input value={userName} onChange={e => setUserName(e.target.value)} placeholder="Ваш позывной" /></div>
+          <div><Label>ПИН-код</Label>
+            <Input type="password" value={userPin} onChange={e => setUserPin(e.target.value)} placeholder="Новый ПИН-код" />
+          </div>
           <div><Label>Связать с бойцом</Label>
             <Select value={userFighter} onValueChange={(v) => v && setUserFighter(v)}>
               <SelectTrigger><SelectValue placeholder="Выберите бойца" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">— Не выбрано —</SelectItem>
-                {fighters.map(f => <SelectItem key={f.id} value={f.id}>{f.nickname} ({f.status})</SelectItem>)}
+                {fighters.filter(f => !users.some(u => u.fighterId === f.id && u.id !== user?.id)).map(f => <SelectItem key={f.id} value={f.id}>{f.nickname} ({f.status})</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -107,7 +112,53 @@ export default function SettingsPage() {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleSaveUser}>Сохранить</Button>
+          <div className="flex gap-2">
+            <Button onClick={handleSaveUser}>Сохранить</Button>
+            <Button variant="outline" onClick={logout}>Выйти</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Управление пользователями</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {users.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Нет пользователей</p>
+          ) : (
+            <div className="divide-y">
+              {users.map(u => {
+                const f = fighters.find(f => f.id === u.fighterId);
+                const userRoles = u.roleIds.map(rid => roles.find(r => r.id === rid)).filter(Boolean);
+                return (
+                  <div key={u.id} className="flex items-center justify-between py-2 text-sm">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium">{u.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {f ? `🎖 ${f.nickname}` : '— боец не привязан'}
+                        {userRoles.length > 0 ? ` · ${userRoles.map(r => r!.name).join(', ')}` : ' · 🔒 нет роли'}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Select value={u.roleIds[0] || 'none'} onValueChange={(v) => {
+                        if (v === 'none' || !v) updateUser(u.id, { roleIds: [] });
+                        else updateUser(u.id, { roleIds: [v] });
+                      }}>
+                        <SelectTrigger className="h-7 text-xs w-28"><SelectValue placeholder="Роль" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">— Нет роли —</SelectItem>
+                          {roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      {u.id !== user?.id && (
+                        <Button variant="ghost" size="sm" className="text-destructive h-7 w-7 p-0 text-xs"
+                          onClick={() => { if (confirm(`Удалить пользователя ${u.name}?`)) deleteUser(u.id); }}>✕</Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 

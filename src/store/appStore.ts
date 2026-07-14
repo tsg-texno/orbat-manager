@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AppState, Fighter, Mission, Role, Specialization, VehicleType, VehicleAssociation, SyncDelta, AppUser, SlotGroup } from '@/lib/types';
+import type { AppState, Fighter, Mission, Role, Specialization, VehicleType, VehicleAssociation, SyncDelta, AppUser, SlotGroup, Permission } from '@/lib/types';
 import { generateId } from '@/lib/utils';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
@@ -51,10 +51,18 @@ interface AppStore extends AppState {
   setLastSyncTimestamp: (ts: number) => void;
   importState: (state: Partial<AppState>) => void;
   assignUserToFighter: (userId: string, fighterId: string) => void;
+  // Auth
+  users: AppUser[];
+  registerUser: (name: string, pin: string, fighterId?: string) => AppUser;
+  login: (pin: string) => boolean;
+  logout: () => void;
+  updateUser: (id: string, data: Partial<AppUser>) => void;
+  deleteUser: (id: string) => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
   user: loadFromStorage<AppUser | null>('user', null),
+  users: loadFromStorage<AppUser[]>('users', []),
   fighters: loadFromStorage<Fighter[]>('fighters', []),
   missions: (() => {
     const raw = loadFromStorage<Mission[]>('missions', []);
@@ -133,12 +141,74 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   importState: (partial) => set((s) => {
     const merged = { ...s, ...partial };
-    Object.entries({ user: merged.user, fighters: merged.fighters, missions: merged.missions, roles: merged.roles, specializations: merged.specializations, vehicleTypes: merged.vehicleTypes, vehicleAssociations: merged.vehicleAssociations, syncEnabled: merged.syncEnabled, lastSyncTimestamp: merged.lastSyncTimestamp, pendingDeltas: merged.pendingDeltas, offlineMode: merged.offlineMode }).forEach(([k, v]) => saveToStorage(k, v));
+    Object.entries({ user: merged.user, users: merged.users, fighters: merged.fighters, missions: merged.missions, roles: merged.roles, specializations: merged.specializations, vehicleTypes: merged.vehicleTypes, vehicleAssociations: merged.vehicleAssociations, syncEnabled: merged.syncEnabled, lastSyncTimestamp: merged.lastSyncTimestamp, pendingDeltas: merged.pendingDeltas, offlineMode: merged.offlineMode }).forEach(([k, v]) => saveToStorage(k, v));
     return merged;
   }),
 
   assignUserToFighter: (userId, fighterId) => set((s) => {
     const fighters = s.fighters.map(f => f.id === fighterId ? { ...f, userId } : f);
     saveToStorage('fighters', fighters); return { fighters };
+  }),
+
+  registerUser: (name, pin, fighterId) => {
+    const state = get();
+    const allRoleIds = state.roles.map(r => r.id);
+    const isFirst = state.users.length === 0;
+    const newUser: AppUser = {
+      id: generateId(),
+      name,
+      pin,
+      fighterId,
+      roleIds: isFirst ? allRoleIds : [],
+      telegramChatId: undefined,
+      telegramRegistered: false,
+      lastSyncTimestamp: 0,
+    };
+    set((s) => {
+      const users = [...s.users, newUser];
+      saveToStorage('users', users);
+      return { users };
+    });
+    // Auto-login after registration
+    set({ user: newUser });
+    saveToStorage('user', newUser);
+    return newUser;
+  },
+
+  login: (pin) => {
+    const state = get();
+    const found = state.users.find(u => u.pin === pin);
+    if (!found) return false;
+    set({ user: found });
+    saveToStorage('user', found);
+    return true;
+  },
+
+  logout: () => {
+    set({ user: null });
+    saveToStorage('user', null);
+  },
+
+  updateUser: (id, data) => set((s) => {
+    const users = s.users.map(u => u.id === id ? { ...u, ...data } : u);
+    saveToStorage('users', users);
+    // If updating current user, sync
+    if (s.user?.id === id) {
+      const updated = users.find(u => u.id === id);
+      if (updated) { set({ user: updated, users }); saveToStorage('user', updated); }
+      else return { users };
+    }
+    return { users };
+  }),
+
+  deleteUser: (id) => set((s) => {
+    const users = s.users.filter(u => u.id !== id);
+    saveToStorage('users', users);
+    if (s.user?.id === id) {
+      set({ user: null, users });
+      saveToStorage('user', null);
+      return { user: null, users };
+    }
+    return { users };
   }),
 }));

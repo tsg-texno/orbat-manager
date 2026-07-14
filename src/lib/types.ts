@@ -11,6 +11,7 @@ export interface Fighter {
 export interface AppUser {
   id: string;
   name: string;
+  pin: string;
   fighterId?: string;
   roleIds: string[];
   telegramChatId?: string;
@@ -114,6 +115,7 @@ export interface SyncDelta {
 
 export interface AppState {
   user: AppUser | null;
+  users: AppUser[];
   fighters: Fighter[];
   missions: Mission[];
   roles: Role[];
