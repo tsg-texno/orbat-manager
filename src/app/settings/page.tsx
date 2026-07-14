@@ -11,10 +11,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { configureSync, loadSyncConfig, isSyncConfigured, pushState, pullState } from '@/lib/sync';
 import { generateId } from '@/lib/utils';
+import { usePermissions } from '@/lib/usePermissions';
 import type { AppUser } from '@/lib/types';
 
 export default function SettingsPage() {
   const { user, users, setUser, updateUser, deleteUser, logout, fighters, roles, assignUserToFighter, syncEnabled, setSyncEnabled, offlineMode, setOfflineMode, lastSyncTimestamp, importState } = useAppStore();
+  const { can } = usePermissions();
 
   const [botToken, setBotToken] = useState('');
   const [chatId, setChatId] = useState('');
@@ -117,7 +119,8 @@ export default function SettingsPage() {
           <div><Label>ПИН-код</Label>
             <Input type="password" value={userPin} onChange={e => setUserPin(e.target.value)} placeholder="Новый ПИН-код" />
           </div>
-          <div><Label>Связать с бойцом</Label>
+          {can('manage_settings') && (
+            <><div><Label>Связать с бойцом</Label>
             <Select value={userFighter} onValueChange={(v) => v && setUserFighter(v)}>
               <SelectTrigger><SelectValue placeholder="Выберите бойца" /></SelectTrigger>
               <SelectContent>
@@ -134,7 +137,8 @@ export default function SettingsPage() {
                 {roles.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
               </SelectContent>
             </Select>
-          </div>
+          </div></>
+          )}
           <div className="flex gap-2">
             <Button onClick={handleSaveUser}>Сохранить</Button>
             <Button variant="outline" onClick={logout}>Выйти</Button>
@@ -142,6 +146,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      {can('manage_settings') && (
       <Card>
         <CardHeader><CardTitle>Управление пользователями</CardTitle></CardHeader>
         <CardContent className="space-y-3">
@@ -207,7 +212,9 @@ export default function SettingsPage() {
           </DialogContent>
         </Dialog>
       </Card>
+      )}
 
+      {can('manage_settings') && (<>
       <Card>
         <CardHeader><CardTitle>Бэкап данных</CardTitle></CardHeader>
         <CardContent className="space-y-4">
@@ -276,6 +283,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      </>)}
     </div>
   );
 }

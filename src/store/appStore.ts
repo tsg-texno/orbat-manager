@@ -16,7 +16,7 @@ function saveToStorage(key: string, value: unknown) {
 }
 
 const defaultRoles: Role[] = [
-  { id: 'role-ko', name: 'КО', color: '#ef4444', permissions: ['manage_roles', 'manage_specializations', 'manage_vehicles', 'manage_missions', 'manage_slots', 'assign_specializations', 'assign_self_to_slot', 'view_roster', 'view_orbat', 'view_specializations', 'view_vehicles', 'sync_data'] },
+  { id: 'role-ko', name: 'КО', color: '#ef4444', permissions: ['manage_roles', 'manage_specializations', 'manage_vehicles', 'manage_missions', 'manage_slots', 'assign_specializations', 'assign_self_to_slot', 'view_roster', 'view_orbat', 'view_specializations', 'view_vehicles', 'sync_data', 'manage_settings'] },
   { id: 'role-zamko', name: 'Зам.КО', color: '#f97316', permissions: ['manage_specializations', 'manage_vehicles', 'manage_slots', 'assign_specializations', 'assign_self_to_slot', 'view_roster', 'view_orbat', 'view_specializations', 'view_vehicles', 'sync_data'] },
   { id: 'role-squad', name: 'Командир отделения', color: '#eab308', permissions: ['assign_specializations', 'assign_self_to_slot', 'view_roster', 'view_orbat', 'view_specializations', 'view_vehicles', 'sync_data'] },
   { id: 'role-soldier', name: 'Стрелок', color: '#22c55e', permissions: ['assign_self_to_slot', 'view_orbat'] },

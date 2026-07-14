@@ -38,7 +38,8 @@ export type Permission =
   | 'view_orbat'
   | 'view_specializations'
   | 'view_vehicles'
-  | 'sync_data';
+  | 'sync_data'
+  | 'manage_settings';
 
 export interface Mission {
   id: string;
