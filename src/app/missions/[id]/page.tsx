@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { SlotCard } from '@/components/orbat/SlotCard';
 import { generateId } from '@/lib/utils';
+import type { VehicleType } from '@/lib/types';
 import Link from 'next/link';
 
 export default function MissionDetailPage() {
@@ -58,37 +59,34 @@ export default function MissionDetailPage() {
   const reserve = allSlots.filter(s => s.status === 'reserve').length;
   const occupied = allSlots.filter(s => s.status === 'occupied_by_others').length;
 
-  const handleGroupVehicle = (groupId: string, vehicleId: string | undefined) => {
+  const toggleGroupVehicle = (groupId: string, vehicleId: string) => {
     const group = mission?.slotGroups.find(g => g.id === groupId);
     if (!group) return;
-    const vt = vehicleTypes.find(v => v.id === vehicleId);
-    if (!vt) {
-      updateSlotGroup(missionId, groupId, { vehicleId: undefined });
-      return;
-    }
-    // Add missing crew slots
-    const newSlots = [...group.slots];
-    const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
-    let added = 0;
-    for (const crewTitle of (vt.crewSlots || [])) {
-      if (!existingTitles.has(crewTitle.toLowerCase())) {
-        newSlots.push({
-          id: generateId(),
-          title: crewTitle,
-          status: 'available',
-          vehicleId: vt.id,
-          vehicleManuallySet: true,
-        });
-        added++;
-      }
-    }
-    updateSlotGroup(missionId, groupId, { vehicleId: vt.id, slots: added > 0 ? newSlots : undefined, totalSlots: added > 0 ? newSlots.length : group.totalSlots });
-    if (added > 0 && !group.vehicleId) {
-      // Also add vehicle slots via autoAssign for existing matching slots
-      const updated = autoAssignVehicles(newSlots, vehicleAssociations, group.name);
-      for (let i = 0; i < updated.length; i++) {
-        if (updated[i].vehicleId !== group.slots[i]?.vehicleId) {
-          updateSlot(missionId, groupId, updated[i].id, { vehicleId: updated[i].vehicleId });
+    const current = group.vehicleIds || [];
+    const idx = current.indexOf(vehicleId);
+    const next = idx >= 0 ? current.filter(v => v !== vehicleId) : [...current, vehicleId];
+    updateSlotGroup(missionId, groupId, { vehicleIds: next.length > 0 ? next : undefined });
+    // If adding, auto-create missing crew slots
+    if (idx < 0) {
+      const vt = vehicleTypes.find(v => v.id === vehicleId);
+      if (vt && vt.crewSlots?.length) {
+        const newSlots = [...group.slots];
+        const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
+        let added = 0;
+        for (const crewTitle of vt.crewSlots) {
+          if (!existingTitles.has(crewTitle.toLowerCase())) {
+            newSlots.push({
+              id: generateId(),
+              title: crewTitle,
+              status: 'available',
+              vehicleId: vt.id,
+              vehicleManuallySet: true,
+            });
+            added++;
+          }
+        }
+        if (added > 0) {
+          updateSlotGroup(missionId, groupId, { vehicleIds: next, slots: newSlots, totalSlots: newSlots.length });
         }
       }
     }
@@ -151,36 +149,34 @@ export default function MissionDetailPage() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {mission.slotGroups.map(group => {
-            const groupVt = group.vehicleId ? vehicleTypes.find(v => v.id === group.vehicleId) : null;
+            const groupVts: VehicleType[] = (group.vehicleIds || []).map(vid => vehicleTypes.find(v => v.id === vid)).filter((v): v is VehicleType => !!v);
             return (
             <Card key={group.id}>
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-base flex items-center gap-2">
-                  {groupVt?.icon && <img src={`/icons/${groupVt.icon}`} alt="" className="w-7 h-7" />}
                   {group.name}
                   <Badge variant="secondary" className="text-xs">{group.slots.length} слотов</Badge>
                 </CardTitle>
-                <div className="flex items-center gap-1">
-                  <div className="flex items-center gap-1 mr-2">
-                    <Select value={group.vehicleId || 'none'} onValueChange={(v) => handleGroupVehicle(group.id, v === 'none' ? '' : v || '')}>
-                      <SelectTrigger className="h-7 text-[11px] w-auto max-w-[140px]">
-                        <SelectValue placeholder="Техника отд." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">— Нет техники —</SelectItem>
-                        {vehicleTypes.map(vt => (
-                          <SelectItem key={vt.id} value={vt.id} className="text-xs">
-                            {vt.icon && <img src={`/icons/${vt.icon}`} alt="" className="w-4 h-4 inline-block mr-1" />}
-                            {vt.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {groupVt && (
-                      <span className="text-[10px] text-muted-foreground">
-                        {groupVt.crewSlots?.length ? `👤×${groupVt.crewSlots.length}` : ''}
-                      </span>
-                    )}
+                <div className="flex items-center gap-1 flex-wrap">
+                  {groupVts.map(vt => (
+                    <span key={vt.id} className="text-[10px] text-muted-foreground mr-1">
+                      {vt.crewSlots?.length ? `👤×${vt.crewSlots.length}` : ''}
+                    </span>
+                  ))}
+                  <div className="flex items-center gap-1">
+                    {vehicleTypes.map(vt => {
+                      const isSelected = group.vehicleIds?.includes(vt.id);
+                      return (
+                        <button key={vt.id}
+                          onClick={() => toggleGroupVehicle(group.id, vt.id)}
+                          className={`p-1 rounded border text-xs transition-colors ${isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-muted-foreground'}`}
+                          title={`${isSelected ? 'Убрать' : 'Добавить'} ${vt.name}`}>
+                          {vt.icon
+                            ? <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-6 h-6" />
+                            : <span className="text-[10px] px-1">{vt.name.slice(0, 4)}</span>}
+                        </button>
+                      );
+                    })}
                   </div>
                   <Button size="sm" variant="outline" className="h-7 text-[11px] px-2"
                     onClick={() => {
@@ -209,6 +205,16 @@ export default function MissionDetailPage() {
                   </Button>
                 </div>
               </CardHeader>
+              {groupVts.length > 0 && (
+                <div className="px-4 pb-2 flex flex-wrap gap-3">
+                  {groupVts.map(vt => (
+                    <div key={vt.id} className="flex flex-col items-center gap-1 p-2 rounded-lg border-2 border-primary/30 bg-primary/5">
+                      {vt.icon && <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-12 h-12" />}
+                      <span className="text-[10px] font-medium text-center leading-tight">{vt.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
               <CardContent>
                 <div className="space-y-2">
                   {group.slots.map(slot => (

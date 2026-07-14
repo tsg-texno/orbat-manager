@@ -51,11 +51,12 @@ export default function DashboardPage() {
         if (s.status === 'taken_by_us') noSpecFilled++;
       }
     }
-    const groupVehicles = m.slotGroups.map(g => {
-      if (!g.vehicleId) return null;
-      const vt = vehicleTypes.find(v => v.id === g.vehicleId);
-      return vt ? { groupName: g.name, vt } : null;
-    }).filter(Boolean);
+    const groupVehicles = m.slotGroups.flatMap(g =>
+      (g.vehicleIds || []).map(vid => {
+        const vt = vehicleTypes.find(v => v.id === vid);
+        return vt ? { groupName: g.name, vt } : null;
+      }).filter(Boolean)
+    );
     return { mission: m, specs: Array.from(specCounts.values()), noSpecTotal, noSpecFilled, groupVehicles };
   });
 
@@ -75,10 +76,9 @@ export default function DashboardPage() {
           <CardContent><p className="text-3xl font-bold">{fighters.length}</p></CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Всего слотов</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Слоты по миссиям</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{totalSlots}</p>
-            <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
+            <div className="space-y-0.5 text-xs text-muted-foreground">
               {missions.map(m => {
                 const slots = m.slotGroups.flatMap(g => g.slots);
                 const taken = slots.filter(s => s.status === 'taken_by_us').length;

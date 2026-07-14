@@ -59,7 +59,7 @@ export interface SlotGroup {
   totalSlots: number;
   slots: Slot[];
   squadType?: string;
-  vehicleId?: string;
+  vehicleIds?: string[];
 }
 
 export interface Slot {
