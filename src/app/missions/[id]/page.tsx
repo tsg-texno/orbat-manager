@@ -285,44 +285,17 @@ export default function MissionDetailPage() {
               )}
               <CardContent>
                 <div className="space-y-2">
-                  {(() => {
-                    // Group consecutive slots with same vehicleId into crews
-                    const groups: { vehicleId: string | undefined; slots: typeof group.slots }[] = [];
-                    for (const s of group.slots || []) {
-                      const last = groups[groups.length - 1];
-                      if (last && last.vehicleId && last.vehicleId === s.vehicleId) {
-                        last.slots.push(s);
-                      } else {
-                        groups.push({ vehicleId: s.vehicleId, slots: [s] });
-                      }
-                    }
-                    return groups.map((grp, gi) => {
-                      const vt = grp.vehicleId ? vehicleTypes.find(v => v.id === grp.vehicleId) : null;
-                      const crewSize = vt?.crewSize ?? 1;
-                      const isCrew = grp.vehicleId && grp.slots.length > 1;
-                      return (
-                        <div key={gi} className={isCrew ? 'rounded-lg border border-primary/20 bg-primary/[0.02] p-2 space-y-1.5' : 'space-y-1.5'}>
-                          {isCrew && (
-                            <div className="flex items-center gap-1.5 px-1.5 pb-1 border-b border-primary/10">
-                              {vt?.icon && <img src={`/icons/${vt.icon}`} alt="" className="w-[30px] h-5" />}
-                              <span className="text-[10px] font-medium text-muted-foreground">Экипаж ×{grp.slots.length} — {vt?.name}</span>
-                            </div>
-                          )}
-                          {grp.slots.map(slot => (
-                            <SlotCard
-                              key={slot.id}
-                              slot={slot}
-                              missionId={missionId}
-                              groupId={group.id}
-                              fighters={fighters}
-                              specializations={specializations}
-                              vehicleTypes={vehicleTypes}
-                            />
-                          ))}
-                        </div>
-                      );
-                    });
-                  })()}
+                  {(group.slots || []).map(slot => (
+                    <SlotCard
+                      key={slot.id}
+                      slot={slot}
+                      missionId={missionId}
+                      groupId={group.id}
+                      fighters={fighters}
+                      specializations={specializations}
+                      vehicleTypes={vehicleTypes}
+                    />
+                  ))}
                 </div>
               </CardContent>
             </Card>
