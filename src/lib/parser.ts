@@ -76,11 +76,7 @@ export function autoAssignVehicles(
       try {
         const slotMatch = new RegExp(va.slotPattern, 'i').test(slot.title);
         if (!slotMatch) return false;
-        let squadMatch = true;
-        if (va.squadPattern && squadName) {
-          squadMatch = new RegExp(va.squadPattern, 'i').test(squadName);
-        }
-        if (!squadMatch) return false;
+        // squadPattern is insignificant — only slot pattern matters for match
         if (va.dependsOnSlots && va.dependsOnSlots.length > 0) {
           const deps = allSlots || slots;
           const allDepMatch = va.dependsOnSlots.every(dp => {
