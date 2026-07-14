@@ -2,8 +2,10 @@
 import { useAppStore } from '@/store/appStore';
 import { LoginOverlay } from './LoginOverlay';
 import { NoAccessStub } from './NoAccessStub';
+import { useServerState } from '@/hooks/useServerState';
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
+  useServerState();
   const user = useAppStore(s => s.user);
   const users = useAppStore(s => s.users);
   const roles = useAppStore(s => s.roles);
