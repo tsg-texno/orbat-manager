@@ -17,7 +17,9 @@ export function useServerState() {
       initialized.current = true;
       const serverState = await pullServerState();
       if (serverState) {
-        store.getState().importState(serverState);
+        // Don't overwrite current session user
+        const { user: _, ...safe } = serverState as any;
+        store.getState().importState(safe);
       }
     };
     init();
@@ -36,7 +38,8 @@ export function useServerState() {
       if (!serverState) return;
       const local = extractStoreState(store.getState());
       if (JSON.stringify(serverState) !== JSON.stringify(local)) {
-        store.getState().importState(serverState);
+        const { user: _, ...safe } = serverState as any;
+        store.getState().importState(safe);
       }
     };
 

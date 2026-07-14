@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { configureSync, loadSyncConfig, isSyncConfigured, pushState, pullState } from '@/lib/sync';
 import { generateId } from '@/lib/utils';
 import { usePermissions } from '@/lib/usePermissions';
+import { RedisStatus } from '@/components/settings/RedisStatus';
 import type { AppUser } from '@/lib/types';
 
 export default function SettingsPage() {
@@ -215,10 +216,11 @@ export default function SettingsPage() {
       )}
 
       {can('manage_settings') && (<>
+      <RedisStatus />
       <Card>
         <CardHeader><CardTitle>Бэкап данных</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">Все данные хранятся локально в браузере. Экспортируйте или импортируйте для переноса между устройствами.</p>
+          <p className="text-sm text-muted-foreground">Данные синхронизируются с сервером (Redis). Экспортируйте или импортируйте для ручного переноса.</p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleExport} title="Скачать бэкап всех данных в формате JSON">📤 Экспорт JSON</Button>
             <Button variant="outline" onClick={handleImport} title="Загрузить ранее сохранённый бэкап JSON">📥 Импорт JSON</Button>
