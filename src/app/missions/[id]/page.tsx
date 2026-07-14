@@ -50,8 +50,8 @@ export default function MissionDetailPage() {
           updateSlot(missionId, group.id, slot.id, { vehicleId: assigned[0].vehicleId });
         }
       }
-      const updated = [...new Set([...(group.vehicleIds || []), ...matchedVehicleIds])];
-      if (updated.length !== (group.vehicleIds || []).length) {
+      const updated = [...(group.vehicleIds || []), ...matchedVehicleIds];
+      if (matchedVehicleIds.length > 0) {
         updateSlotGroup(missionId, group.id, { vehicleIds: updated });
       }
     }
@@ -66,37 +66,43 @@ export default function MissionDetailPage() {
   const reserve = allSlots.filter(s => s.status === 'reserve').length;
   const occupied = allSlots.filter(s => s.status === 'occupied_by_others').length;
 
-  const toggleGroupVehicle = (groupId: string, vehicleId: string) => {
+  const addGroupVehicle = (groupId: string, vehicleId: string) => {
     const group = mission?.slotGroups.find(g => g.id === groupId);
     if (!group) return;
     const current = group.vehicleIds || [];
-    const idx = current.indexOf(vehicleId);
-    const next = idx >= 0 ? current.filter(v => v !== vehicleId) : [...current, vehicleId];
-    updateSlotGroup(missionId, groupId, { vehicleIds: next.length > 0 ? next : undefined });
-    // If adding, auto-create missing crew slots
-    if (idx < 0) {
-      const vt = vehicleTypes.find(v => v.id === vehicleId);
-      if (vt && vt.crewSlots?.length) {
-        const newSlots = [...(group.slots || [])];
-        const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
-        let added = 0;
-        for (const crewTitle of vt.crewSlots) {
-          if (!existingTitles.has(crewTitle.toLowerCase())) {
-            newSlots.push({
-              id: generateId(),
-              title: crewTitle,
-              status: 'available',
-              vehicleId: vt.id,
-              vehicleManuallySet: true,
-            });
-            added++;
-          }
-        }
-        if (added > 0) {
-          updateSlotGroup(missionId, groupId, { vehicleIds: next, slots: newSlots, totalSlots: newSlots.length });
+    const next = [...current, vehicleId];
+    updateSlotGroup(missionId, groupId, { vehicleIds: next });
+    // Auto-create missing crew slots
+    const vt = vehicleTypes.find(v => v.id === vehicleId);
+    if (vt && vt.crewSlots?.length) {
+      const newSlots = [...(group.slots || [])];
+      const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
+      let added = 0;
+      for (const crewTitle of vt.crewSlots) {
+        if (!existingTitles.has(crewTitle.toLowerCase())) {
+          newSlots.push({
+            id: generateId(),
+            title: crewTitle,
+            status: 'available',
+            vehicleId: vt.id,
+            vehicleManuallySet: true,
+          });
+          added++;
         }
       }
+      if (added > 0) {
+        updateSlotGroup(missionId, groupId, { vehicleIds: next, slots: newSlots, totalSlots: newSlots.length });
+      }
     }
+  };
+
+  const removeGroupVehicle = (groupId: string, vehicleId: string, instanceIndex: number) => {
+    const group = mission?.slotGroups.find(g => g.id === groupId);
+    if (!group) return;
+    const current = group.vehicleIds || [];
+    let count = -1;
+    const next = current.filter(v => { if (v === vehicleId) { count++; return count !== instanceIndex; } return true; });
+    updateSlotGroup(missionId, groupId, { vehicleIds: next.length > 0 ? next : undefined });
   };
 
   if (!mission) return (
@@ -173,14 +179,12 @@ export default function MissionDetailPage() {
                     <select
                       className="h-8 text-xs rounded-md border bg-background px-2"
                       value=""
-                      onChange={e => { if (e.target.value) toggleGroupVehicle(group.id, e.target.value); }}
+                      onChange={e => { if (e.target.value) { addGroupVehicle(group.id, e.target.value); e.target.value = ''; } }}
                     >
                       <option value="">+ Добавить технику</option>
-                      {vehicleTypes
-                        .filter(vt => !group.vehicleIds?.includes(vt.id))
-                        .map(vt => (
-                          <option key={vt.id} value={vt.id}>{vt.name}</option>
-                        ))}
+                      {vehicleTypes.map(vt => (
+                        <option key={vt.id} value={vt.id}>{vt.name}</option>
+                      ))}
                     </select>
                   </div>
                   <Button size="sm" variant="outline" className="h-7 text-[11px] px-2" title="Сохранить соответствие техники слотам как ассоциации"
@@ -213,20 +217,29 @@ export default function MissionDetailPage() {
               </CardHeader>
               {groupVts.length > 0 && (
                 <div className="px-4 pb-2 flex flex-wrap gap-2">
-                  {groupVts.map(vt => (
-                    <div key={vt.id} className="flex flex-col items-center gap-1 p-2 rounded-lg border-2 border-primary/30 bg-primary/5 relative group/veh">
-                      <RequireEdit perm="manage_slots">
-                        <button
-                          onClick={() => toggleGroupVehicle(group.id, vt.id)}
-                          className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] leading-none flex items-center justify-center opacity-0 group-hover/veh:opacity-100 transition-opacity"
-                          title="Убрать"
-                        >✕</button>
-                      </RequireEdit>
-                      {vt.icon && <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-[72px] h-12" />}
-                      <span className="text-[10px] font-medium text-center leading-tight">{vt.name}</span>
-                      {vt.crewSlots?.length ? <span className="text-[9px] text-muted-foreground">👤×{vt.crewSlots.length}</span> : null}
-                    </div>
-                  ))}
+                  {(() => {
+                    const instanceCount = new Map<string, number>();
+                    return (group.vehicleIds || []).map((vid, idx) => {
+                      const vt = vehicleTypes.find(v => v.id === vid);
+                      if (!vt) return null;
+                      const count = instanceCount.get(vid) || 0;
+                      instanceCount.set(vid, count + 1);
+                      return (
+                        <div key={`${vid}-${idx}`} className="flex flex-col items-center gap-1 p-2 rounded-lg border-2 border-primary/30 bg-primary/5 relative group/veh">
+                          <RequireEdit perm="manage_slots">
+                            <button
+                              onClick={() => removeGroupVehicle(group.id, vid, count)}
+                              className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] leading-none flex items-center justify-center opacity-0 group-hover/veh:opacity-100 transition-opacity"
+                              title="Убрать"
+                            >✕</button>
+                          </RequireEdit>
+                          {vt.icon && <img src={`/icons/${vt.icon}`} alt={vt.name} className="w-[72px] h-12" />}
+                          <span className="text-[10px] font-medium text-center leading-tight">{vt.name}</span>
+                          {vt.crewSlots?.length ? <span className="text-[9px] text-muted-foreground">👤×{vt.crewSlots.length}</span> : null}
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               )}
               <CardContent>
