@@ -26,12 +26,13 @@ export function SyncStatus() {
         specializations: store.specializations,
         vehicleTypes: store.vehicleTypes,
         vehicleAssociations: store.vehicleAssociations,
+        specializationAssociations: store.specializationAssociations,
       });
       lastPushRef.current = Date.now();
       const remote = await pullState();
       if (remote) {
         const merged: Partial<typeof remote> = {};
-        const keys: (keyof typeof remote)[] = ['users', 'fighters', 'missions', 'roles', 'specializations', 'vehicleTypes', 'vehicleAssociations'];
+        const keys: (keyof typeof remote)[] = ['users', 'fighters', 'missions', 'roles', 'specializations', 'vehicleTypes', 'vehicleAssociations', 'specializationAssociations'];
         for (const key of keys) {
           if (remote[key] && JSON.stringify(remote[key]) !== JSON.stringify(store[key])) {
             (merged as any)[key] = remote[key];

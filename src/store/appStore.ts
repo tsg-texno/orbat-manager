@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AppState, Fighter, Mission, Role, Specialization, VehicleType, VehicleAssociation, SyncDelta, AppUser, SlotGroup, Permission } from '@/lib/types';
+import type { AppState, Fighter, Mission, Role, Specialization, VehicleType, VehicleAssociation, SpecializationAssociation, SyncDelta, AppUser, SlotGroup, Permission } from '@/lib/types';
 import { generateId } from '@/lib/utils';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
@@ -43,7 +43,11 @@ interface AppStore extends AppState {
   updateVehicleType: (id: string, data: Partial<VehicleType>) => void;
   deleteVehicleType: (id: string) => void;
   addVehicleAssociation: (va: Omit<VehicleAssociation, 'id'>) => void;
+  updateVehicleAssociation: (id: string, data: Partial<VehicleAssociation>) => void;
   removeVehicleAssociation: (id: string) => void;
+  addSpecializationAssociation: (sa: Omit<SpecializationAssociation, 'id'>) => void;
+  updateSpecializationAssociation: (id: string, data: Partial<SpecializationAssociation>) => void;
+  removeSpecializationAssociation: (id: string) => void;
   setSyncEnabled: (enabled: boolean) => void;
   setOfflineMode: (offline: boolean) => void;
   addPendingDelta: (delta: SyncDelta) => void;
@@ -73,6 +77,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   specializations: loadFromStorage<Specialization[]>('specializations', []),
   vehicleTypes: loadFromStorage<VehicleType[]>('vehicleTypes', []),
   vehicleAssociations: loadFromStorage<VehicleAssociation[]>('vehicleAssociations', []),
+  specializationAssociations: loadFromStorage<SpecializationAssociation[]>('specializationAssociations', []),
   syncEnabled: loadFromStorage<boolean>('syncEnabled', true),
   lastSyncTimestamp: loadFromStorage<number>('lastSyncTimestamp', 0),
   pendingDeltas: loadFromStorage<SyncDelta[]>('pendingDeltas', []),
@@ -131,7 +136,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
   deleteVehicleType: (id) => set((s) => { const vehicleTypes = s.vehicleTypes.filter(vt => vt.id !== id); saveToStorage('vehicleTypes', vehicleTypes); return { vehicleTypes }; }),
 
   addVehicleAssociation: (va) => { const id = generateId(); set((s) => { const vehicleAssociations = [...s.vehicleAssociations, { ...va, id }]; saveToStorage('vehicleAssociations', vehicleAssociations); return { vehicleAssociations }; }); },
+  updateVehicleAssociation: (id, data) => set((s) => { const vehicleAssociations = s.vehicleAssociations.map(va => va.id === id ? { ...va, ...data } : va); saveToStorage('vehicleAssociations', vehicleAssociations); return { vehicleAssociations }; }),
   removeVehicleAssociation: (id) => set((s) => { const vehicleAssociations = s.vehicleAssociations.filter(va => va.id !== id); saveToStorage('vehicleAssociations', vehicleAssociations); return { vehicleAssociations }; }),
+  addSpecializationAssociation: (sa) => { const id = generateId(); set((s) => { const specializationAssociations = [...s.specializationAssociations, { ...sa, id }]; saveToStorage('specializationAssociations', specializationAssociations); return { specializationAssociations }; }); },
+  updateSpecializationAssociation: (id, data) => set((s) => { const specializationAssociations = s.specializationAssociations.map(sa => sa.id === id ? { ...sa, ...data } : sa); saveToStorage('specializationAssociations', specializationAssociations); return { specializationAssociations }; }),
+  removeSpecializationAssociation: (id) => set((s) => { const specializationAssociations = s.specializationAssociations.filter(sa => sa.id !== id); saveToStorage('specializationAssociations', specializationAssociations); return { specializationAssociations }; }),
 
   setSyncEnabled: (syncEnabled) => { set({ syncEnabled }); saveToStorage('syncEnabled', syncEnabled); },
   setOfflineMode: (offlineMode) => { set({ offlineMode }); saveToStorage('offlineMode', offlineMode); },
@@ -141,7 +150,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   importState: (partial) => set((s) => {
     const merged = { ...s, ...partial };
-    Object.entries({ user: merged.user, users: merged.users, fighters: merged.fighters, missions: merged.missions, roles: merged.roles, specializations: merged.specializations, vehicleTypes: merged.vehicleTypes, vehicleAssociations: merged.vehicleAssociations, syncEnabled: merged.syncEnabled, lastSyncTimestamp: merged.lastSyncTimestamp, pendingDeltas: merged.pendingDeltas, offlineMode: merged.offlineMode }).forEach(([k, v]) => saveToStorage(k, v));
+    Object.entries({ user: merged.user, users: merged.users, fighters: merged.fighters, missions: merged.missions, roles: merged.roles, specializations: merged.specializations, vehicleTypes: merged.vehicleTypes, vehicleAssociations: merged.vehicleAssociations, specializationAssociations: merged.specializationAssociations, syncEnabled: merged.syncEnabled, lastSyncTimestamp: merged.lastSyncTimestamp, pendingDeltas: merged.pendingDeltas, offlineMode: merged.offlineMode }).forEach(([k, v]) => saveToStorage(k, v));
     return merged;
   }),
 

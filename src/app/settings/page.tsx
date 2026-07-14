@@ -261,11 +261,12 @@ export default function SettingsPage() {
                 users: store.users, fighters: store.fighters, missions: store.missions,
                 roles: store.roles, specializations: store.specializations,
                 vehicleTypes: store.vehicleTypes, vehicleAssociations: store.vehicleAssociations,
+                specializationAssociations: store.specializationAssociations,
               });
               const remote = await pullState();
               if (remote) {
                 const merged: any = {};
-                for (const key of ['users', 'fighters', 'missions', 'roles', 'specializations', 'vehicleTypes', 'vehicleAssociations']) {
+                for (const key of ['users', 'fighters', 'missions', 'roles', 'specializations', 'vehicleTypes', 'vehicleAssociations', 'specializationAssociations']) {
                   if ((remote as any)[key] && JSON.stringify((remote as any)[key]) !== JSON.stringify(store[key as keyof typeof store])) {
                     merged[key] = (remote as any)[key];
                   }

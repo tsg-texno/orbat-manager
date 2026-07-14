@@ -1,5 +1,5 @@
 import { generateId } from '@/lib/utils';
-import type { SlotGroup, Slot, SlotStatus } from '@/lib/types';
+import type { SlotGroup, Slot, SlotStatus, SpecializationAssociation } from '@/lib/types';
 
 export function parseSlotText(text: string): SlotGroup | null {
   const lines = text.trim().split('\n').map(l => l.trim()).filter(Boolean);
@@ -44,9 +44,20 @@ export function parseSlotText(text: string): SlotGroup | null {
 
 export function autoAssignSpecializations(
   slots: Slot[],
-  specializations: { id: string; name: string; matchPatterns: string[] }[]
+  specializations: { id: string; name: string; matchPatterns: string[] }[],
+  associations?: { id: string; slotPattern: string; specializationId: string }[]
 ): Slot[] {
   return slots.map(slot => {
+    if (slot.specializationId) return slot;
+    // First try explicit associations
+    if (associations) {
+      const assocMatch = associations.find(a => {
+        try { return new RegExp(a.slotPattern, 'i').test(slot.title); }
+        catch { return slot.title.toLowerCase().includes(a.slotPattern.toLowerCase()); }
+      });
+      if (assocMatch) return { ...slot, specializationId: assocMatch.specializationId };
+    }
+    // Fall back to pattern matching on specialization definitions
     const match = specializations.find(sp =>
       sp.matchPatterns.some(pattern => {
         try {

@@ -23,7 +23,7 @@ export default function MissionDetailPage() {
   const params = useParams();
   const missionId = params.id as string;
   const mission = useAppStore(s => s.missions.find(m => m.id === missionId));
-  const { addSlotGroup, removeSlotGroup, updateSlotGroup, updateSlot, updateMission, addVehicleAssociation, fighters, specializations, vehicleTypes, vehicleAssociations } = useAppStore();
+  const { addSlotGroup, removeSlotGroup, updateSlotGroup, updateSlot, updateMission, addVehicleAssociation, fighters, specializations, vehicleTypes, vehicleAssociations, specializationAssociations } = useAppStore();
 
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
@@ -31,7 +31,7 @@ export default function MissionDetailPage() {
   const handlePaste = () => {
     const parsed = parseSlotText(pasteText);
     if (!parsed) return;
-    const withSpecs = autoAssignSpecializations(parsed.slots, specializations);
+    const withSpecs = autoAssignSpecializations(parsed.slots, specializations, specializationAssociations);
     const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name);
     addSlotGroup(missionId, { ...parsed, slots: withVehicles, vehicleIds: matchedVehicleIds });
     setPasteText('');

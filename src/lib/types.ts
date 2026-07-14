@@ -106,6 +106,14 @@ export interface VehicleAssociation {
   dependsOnSlots?: string[];
 }
 
+export interface SpecializationAssociation {
+  id: string;
+  slotPattern: string;
+  specializationId: string;
+  squadPattern?: string;
+  dependsOnSlots?: string[];
+}
+
 export interface SyncDelta {
   path: string;
   value: unknown;
@@ -123,6 +131,7 @@ export interface AppState {
   specializations: Specialization[];
   vehicleTypes: VehicleType[];
   vehicleAssociations: VehicleAssociation[];
+  specializationAssociations: SpecializationAssociation[];
   syncEnabled: boolean;
   lastSyncTimestamp: number;
   pendingDeltas: SyncDelta[];

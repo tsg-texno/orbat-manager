@@ -16,7 +16,7 @@ import { usePermissions } from '@/lib/usePermissions';
 import { RequirePerm, RequireEdit } from '@/components/auth/RequirePerm';
 
 export default function VehiclesPage() {
-  const { vehicleTypes, addVehicleType, updateVehicleType, deleteVehicleType, vehicleAssociations, addVehicleAssociation, removeVehicleAssociation } = useAppStore();
+  const { vehicleTypes, addVehicleType, updateVehicleType, deleteVehicleType, vehicleAssociations, addVehicleAssociation, updateVehicleAssociation, removeVehicleAssociation } = useAppStore();
   const allIcons = getAllIcons();
   const categories = getCategories().filter(c => c !== 'Все');
 
@@ -30,6 +30,7 @@ export default function VehiclesPage() {
   const [vtCrewSlots, setVtCrewSlots] = useState('');
 
   const [assocOpen, setAssocOpen] = useState(false);
+  const [assocEditId, setAssocEditId] = useState<string | null>(null);
   const [assocSlotPattern, setAssocSlotPattern] = useState('');
   const [assocSquadPattern, setAssocSquadPattern] = useState('');
   const [assocDependsOn, setAssocDependsOn] = useState('');
@@ -37,6 +38,21 @@ export default function VehiclesPage() {
 
   const resetVt = () => {
     setVtName(''); setVtModel(''); setVtFaction('ru'); setVtCategory('Танк'); setVtIcon(''); setVtCrewSlots(''); setVtEditId(null);
+  };
+
+  const resetAssoc = () => {
+    setAssocSlotPattern(''); setAssocSquadPattern(''); setAssocDependsOn(''); setAssocVehicleId(''); setAssocEditId(null); setAssocOpen(false);
+  };
+
+  const openAssocEdit = (id: string) => {
+    const va = vehicleAssociations.find(a => a.id === id);
+    if (!va) return;
+    setAssocSlotPattern(va.slotPattern);
+    setAssocSquadPattern(va.squadPattern || '');
+    setAssocDependsOn((va.dependsOnSlots || []).join(', '));
+    setAssocVehicleId(va.vehicleTypeId);
+    setAssocEditId(id);
+    setAssocOpen(true);
   };
 
   const handleVtEdit = (id: string) => {
@@ -56,18 +72,16 @@ export default function VehiclesPage() {
     resetVt(); setVtOpen(false);
   };
 
-  const resetAssoc = () => {
-    setAssocSlotPattern(''); setAssocSquadPattern(''); setAssocDependsOn(''); setAssocVehicleId(''); setAssocOpen(false);
-  };
-
   const handleAssocAdd = () => {
     if (!assocSlotPattern.trim() || !assocVehicleId) return;
-    addVehicleAssociation({
+    const data = {
       slotPattern: assocSlotPattern.trim(),
       squadPattern: assocSquadPattern.trim() || undefined,
       dependsOnSlots: assocDependsOn.trim() ? assocDependsOn.split(',').map(s => s.trim()).filter(Boolean) : undefined,
       vehicleTypeId: assocVehicleId,
-    });
+    };
+    if (assocEditId) updateVehicleAssociation(assocEditId, data);
+    else addVehicleAssociation(data);
     resetAssoc();
   };
 
@@ -187,9 +201,9 @@ export default function VehiclesPage() {
           <div className="flex justify-end">
             <RequireEdit perm="manage_vehicles">
             <Dialog open={assocOpen} onOpenChange={(o) => { if (!o) resetAssoc(); setAssocOpen(o); }}>
-              <Button variant="default" onClick={() => setAssocOpen(true)} title="Добавить новую ассоциацию слота с техникой">+ Ассоциация</Button>
+              <Button variant="default" onClick={() => { resetAssoc(); setAssocOpen(true); }} title="Добавить новую ассоциацию слота с техникой">+ Ассоциация</Button>
               <DialogContent>
-                <DialogHeader><DialogTitle>Новая ассоциация</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{assocEditId ? 'Редактировать' : 'Новая'} ассоциация</DialogTitle></DialogHeader>
                 <div className="space-y-4">
                   <div><Label>Паттерн названия слота (regex)</Label>
                     <Input value={assocSlotPattern} onChange={e => setAssocSlotPattern(e.target.value)} placeholder="Наводчик БТР-82А" />
@@ -209,7 +223,7 @@ export default function VehiclesPage() {
                       ))}
                     </select>
                   </div>
-                  <Button onClick={handleAssocAdd} className="w-full" title="Создать ассоциацию">Добавить</Button>
+                  <Button onClick={handleAssocAdd} className="w-full" title={assocEditId ? 'Сохранить изменения ассоциации' : 'Создать ассоциацию'}>{assocEditId ? 'Сохранить' : 'Добавить'}</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -228,7 +242,7 @@ export default function VehiclesPage() {
             return entries.length === 0 ? (
               <Card><CardContent className="py-8 text-center text-muted-foreground">Нет ассоциаций</CardContent></Card>
             ) : entries.map(([vtName, vas]) => (
-              <AssocGroup key={vtName} vtName={vtName} vas={vas} vehicleTypes={vehicleTypes} removeVehicleAssociation={removeVehicleAssociation} />
+              <AssocGroup key={vtName} vtName={vtName} vas={vas} vehicleTypes={vehicleTypes} removeVehicleAssociation={removeVehicleAssociation} onEdit={openAssocEdit} />
             ));
           })()}
         </TabsContent>
@@ -238,11 +252,12 @@ export default function VehiclesPage() {
   );
 }
 
-function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation }: {
+function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation, onEdit }: {
   vtName: string;
   vas: VehicleAssociation[];
   vehicleTypes: VehicleType[];
   removeVehicleAssociation: (id: string) => void;
+  onEdit: (id: string) => void;
 }) {
   const [open, setOpen] = useState(true);
   const vt = vehicleTypes.find(v => v.name === vtName);
@@ -287,7 +302,10 @@ function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation }: {
                       </div>
                     )}
                   </div>
-                  {can('manage_vehicles') && <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0" title="Удалить ассоциацию">🗑</Button>}
+                  {can('manage_vehicles') && <>
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(va.id)} title="Редактировать ассоциацию">✏️</Button>
+                    <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0" title="Удалить ассоциацию">🗑</Button>
+                  </>}
                 </div>
               );
             })}
