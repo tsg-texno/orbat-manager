@@ -145,11 +145,11 @@ export default function DashboardPage() {
                           const r = sp.total > 0 ? sp.filled / sp.total : 0;
                           const c = r < 0.33 ? 'border-red-500/40 bg-red-500/5' : r < 0.67 ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-green-500/40 bg-green-500/5';
                           return (
-                            <div key={i} className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border ${c}`}>
-                              {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-[30px] h-[30px]" />}
+                            <div key={i} className={`inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border min-w-[130px] ${c}`}>
+                              {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-[38px] h-[38px]" />}
                               <div className="flex flex-col leading-tight">
-                                <span className="text-xs font-medium">{sp.name}</span>
-                                <span className={`text-xs font-bold ${r < 0.33 ? 'text-red-500' : r < 0.67 ? 'text-yellow-500' : 'text-green-500'}`}>
+                                <span className="text-sm font-medium">{sp.name}</span>
+                                <span className={`text-sm font-bold ${r < 0.33 ? 'text-red-500' : r < 0.67 ? 'text-yellow-500' : 'text-green-500'}`}>
                                   {sp.filled}/{sp.total}
                                 </span>
                               </div>
@@ -157,11 +157,11 @@ export default function DashboardPage() {
                           );
                         })}
                         {noSpecTotal > 0 && (
-                          <div className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-muted">
-                            <div className="w-[30px] h-[30px] rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">?</div>
+                          <div className="inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-muted min-w-[130px]">
+                            <div className="w-[38px] h-[38px] rounded bg-muted flex items-center justify-center text-sm text-muted-foreground">?</div>
                             <div className="flex flex-col leading-tight">
-                              <span className="text-xs font-medium">Без специ</span>
-                              <span className="text-xs font-bold text-muted-foreground">{noSpecFilled}/{noSpecTotal}</span>
+                              <span className="text-sm font-medium">Без специ</span>
+                              <span className="text-sm font-bold text-muted-foreground">{noSpecFilled}/{noSpecTotal}</span>
                             </div>
                           </div>
                         )}
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                         <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t">
                           {groupVehicles.map((gv, i) => gv && (
                             <div key={i} className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-muted/50">
-                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-[30px] h-[30px]" />}
+                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-[38px] h-[38px]" />}
                               <span className="text-muted-foreground">{gv.groupName}:</span>
                               <span className="font-medium">{gv.vt.name}</span>
                             </div>
