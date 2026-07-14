@@ -97,7 +97,7 @@ export default function MissionDetailPage() {
   if (!mission) return (
     <div className="text-center py-12">
       <p className="text-xl text-muted-foreground mb-4">Миссия не найдена</p>
-      <Link href="/missions"><Button>Вернуться к списку</Button></Link>
+      <Link href="/missions"><Button title="Вернуться к списку миссий">Вернуться к списку</Button></Link>
     </div>
   );
 
@@ -135,7 +135,7 @@ export default function MissionDetailPage() {
                   onChange={e => setPasteText(e.target.value)}
                   placeholder={`Alpha-2-1 (7)\nКомандир отделения\nСтарший стрелок\nПулеметчик\nГранатометчик\nПомощник гранатометчика\nНаводчик БТР-82А\nВодитель БТР-82А`}
                 />
-                <Button onClick={handlePaste} className="w-full">Добавить расстановку</Button>
+                <Button onClick={handlePaste} className="w-full" title="Разобрать текст и создать группы слотов">Добавить расстановку</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -148,7 +148,7 @@ export default function MissionDetailPage() {
           <CardContent className="py-16 text-center text-muted-foreground">
             <p className="text-lg mb-2">Нет расстановки</p>
             <p className="text-sm mb-4">Вставьте скопированную расстановку из игры или из текстового файла</p>
-            <RequireEdit perm="manage_slots"><Button onClick={() => setPasteOpen(true)}>📋 Вставить расстановку</Button></RequireEdit>
+            <RequireEdit perm="manage_slots"><Button onClick={() => setPasteOpen(true)} title="Вставить скопированную из игры расстановку">📋 Вставить расстановку</Button></RequireEdit>
           </CardContent>
         </Card>
       ) : (
@@ -178,7 +178,7 @@ export default function MissionDetailPage() {
                         ))}
                     </select>
                   </div>
-                  <Button size="sm" variant="outline" className="h-7 text-[11px] px-2"
+                  <Button size="sm" variant="outline" className="h-7 text-[11px] px-2" title="Сохранить соответствие техники слотам как ассоциации"
                     onClick={() => {
                       let added = 0;
                       for (const s of group.slots) {
@@ -199,7 +199,7 @@ export default function MissionDetailPage() {
                     }}>
                     💾 Запомнить
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" title="Удалить группу слотов"
                     onClick={() => removeSlotGroup(missionId, group.id)}>
                     ✕
                   </Button>

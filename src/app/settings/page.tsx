@@ -140,8 +140,8 @@ export default function SettingsPage() {
           </div></>
           )}
           <div className="flex gap-2">
-            <Button onClick={handleSaveUser}>Сохранить</Button>
-            <Button variant="outline" onClick={logout}>Выйти</Button>
+            <Button onClick={handleSaveUser} title="Сохранить изменения профиля">Сохранить</Button>
+            <Button variant="outline" onClick={logout} title="Выйти из учётной записи">Выйти</Button>
           </div>
         </CardContent>
       </Card>
@@ -167,10 +167,10 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-xs" onClick={() => openEdit(u)}>✏️</Button>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-xs" onClick={() => openEdit(u)} title="Редактировать пользователя">✏️</Button>
                       {u.id !== user?.id && (
                         <Button variant="ghost" size="sm" className="text-destructive h-7 w-7 p-0 text-xs"
-                          onClick={() => { if (confirm(`Удалить пользователя ${u.name}?`)) deleteUser(u.id); }}>✕</Button>
+                          onClick={() => { if (confirm(`Удалить пользователя ${u.name}?`)) deleteUser(u.id); }} title="Удалить пользователя">✕</Button>
                       )}
                     </div>
                   </div>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleEditSave} className="w-full">Сохранить</Button>
+              <Button onClick={handleEditSave} className="w-full" title="Сохранить изменения пользователя">Сохранить</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -220,8 +220,8 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">Все данные хранятся локально в браузере. Экспортируйте или импортируйте для переноса между устройствами.</p>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExport}>📤 Экспорт JSON</Button>
-            <Button variant="outline" onClick={handleImport}>📥 Импорт JSON</Button>
+            <Button variant="outline" onClick={handleExport} title="Скачать бэкап всех данных в формате JSON">📤 Экспорт JSON</Button>
+            <Button variant="outline" onClick={handleImport} title="Загрузить ранее сохранённый бэкап JSON">📥 Импорт JSON</Button>
           </div>
         </CardContent>
       </Card>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
             <Input value={chatId} onChange={e => setChatId(e.target.value)} placeholder="123456789" />
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleSaveSync}>Сохранить настройки</Button>
+            <Button onClick={handleSaveSync} title="Сохранить токен и Chat ID для Telegram">Сохранить настройки</Button>
             <Button variant="outline" onClick={async () => {
               const store = useAppStore.getState();
               await pushState({

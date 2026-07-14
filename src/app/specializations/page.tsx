@@ -85,7 +85,7 @@ export default function SpecializationsPage() {
                   <option value="командир">Командир</option>
                 </select>
               </div>
-              <Button onClick={handleSave} className="w-full">Сохранить</Button>
+              <Button onClick={handleSave} className="w-full" title={editId ? 'Сохранить изменения специализации' : 'Создать новую специализацию'}>Сохранить</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -118,8 +118,8 @@ export default function SpecializationsPage() {
                   <TableCell>
                     <RequireEdit perm="manage_specializations">
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(s.id)}>✏️</Button>
-                      <Button variant="ghost" size="sm" onClick={() => deleteSpecialization(s.id)} className="text-destructive">🗑</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(s.id)} title="Редактировать специализацию">✏️</Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteSpecialization(s.id)} className="text-destructive" title="Удалить специализацию">🗑</Button>
                     </div>
                     </RequireEdit>
                   </TableCell>

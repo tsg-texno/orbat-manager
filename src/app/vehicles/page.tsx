@@ -86,7 +86,7 @@ export default function VehiclesPage() {
           <div className="flex justify-end">
             <RequireEdit perm="manage_vehicles">
             <Dialog open={vtOpen} onOpenChange={(o) => { if (!o) resetVt(); setVtOpen(o); }}>
-              <Button variant="default" onClick={() => setVtOpen(true)}>+ Тип техники</Button>
+              <Button variant="default" onClick={() => setVtOpen(true)} title="Добавить новый тип техники">+ Тип техники</Button>
               <DialogContent>
                 <DialogHeader><DialogTitle>{vtEditId ? 'Редактировать' : 'Новый'} тип техники</DialogTitle></DialogHeader>
                 <div className="space-y-4">
@@ -109,7 +109,7 @@ export default function VehiclesPage() {
                     <Input value={vtCrewSlots} onChange={e => setVtCrewSlots(e.target.value)} placeholder="Водитель УАЗа" />
                     <p className="text-xs text-muted-foreground mt-1">Названия слотов экипажа, которые будут созданы при привязке техники к отделению</p>
                   </div>
-                  <Button onClick={handleVtSave} className="w-full">{vtEditId ? 'Сохранить' : 'Добавить'}</Button>
+                  <Button onClick={handleVtSave} className="w-full" title={vtEditId ? 'Сохранить изменения типа техники' : 'Создать новый тип техники'}>{vtEditId ? 'Сохранить' : 'Добавить'}</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -132,7 +132,7 @@ export default function VehiclesPage() {
                 <TableBody>
                   {vehicleTypes.length === 0 ? (
                     <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      Нет типов техники. <RequireEdit perm="manage_vehicles"><Button variant="link" onClick={() => setVtOpen(true)}>Добавить</Button></RequireEdit>
+                      Нет типов техники. <RequireEdit perm="manage_vehicles"><Button variant="link" onClick={() => setVtOpen(true)} title="Добавить первый тип техники">Добавить</Button></RequireEdit>
                     </TableCell></TableRow>
                   ) : vehicleTypes.map(vt => (
                     <TableRow key={vt.id}>
@@ -148,8 +148,8 @@ export default function VehiclesPage() {
                       <TableCell>
                         <RequireEdit perm="manage_vehicles">
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => handleVtEdit(vt.id)}>✏️</Button>
-                          <Button variant="ghost" size="sm" onClick={() => deleteVehicleType(vt.id)} className="text-destructive">🗑</Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleVtEdit(vt.id)} title="Редактировать тип техники">✏️</Button>
+                          <Button variant="ghost" size="sm" onClick={() => deleteVehicleType(vt.id)} className="text-destructive" title="Удалить тип техники">🗑</Button>
                         </div>
                         </RequireEdit>
                       </TableCell>
@@ -187,7 +187,7 @@ export default function VehiclesPage() {
           <div className="flex justify-end">
             <RequireEdit perm="manage_vehicles">
             <Dialog open={assocOpen} onOpenChange={(o) => { if (!o) resetAssoc(); setAssocOpen(o); }}>
-              <Button variant="default" onClick={() => setAssocOpen(true)}>+ Ассоциация</Button>
+              <Button variant="default" onClick={() => setAssocOpen(true)} title="Добавить новую ассоциацию слота с техникой">+ Ассоциация</Button>
               <DialogContent>
                 <DialogHeader><DialogTitle>Новая ассоциация</DialogTitle></DialogHeader>
                 <div className="space-y-4">
@@ -209,7 +209,7 @@ export default function VehiclesPage() {
                       ))}
                     </select>
                   </div>
-                  <Button onClick={handleAssocAdd} className="w-full">Добавить</Button>
+                  <Button onClick={handleAssocAdd} className="w-full" title="Создать ассоциацию">Добавить</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -287,7 +287,7 @@ function AssocGroup({ vtName, vas, vehicleTypes, removeVehicleAssociation }: {
                       </div>
                     )}
                   </div>
-                  {can('manage_vehicles') && <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0">🗑</Button>}
+                  {can('manage_vehicles') && <Button variant="ghost" size="sm" onClick={() => removeVehicleAssociation(va.id)} className="text-destructive shrink-0" title="Удалить ассоциацию">🗑</Button>}
                 </div>
               );
             })}

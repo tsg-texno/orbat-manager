@@ -80,7 +80,7 @@ export default function RolesPage() {
                   ))}
                 </div>
               </div>
-              <Button onClick={handleSave} className="w-full">Сохранить</Button>
+              <Button onClick={handleSave} className="w-full" title="Сохранить настройки роли">Сохранить</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -115,8 +115,8 @@ export default function RolesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(role.id)}>✏️</Button>
-                      <Button variant="ghost" size="sm" onClick={() => deleteRole(role.id)} className="text-destructive">🗑</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(role.id)} title="Редактировать роль">✏️</Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteRole(role.id)} className="text-destructive" title="Удалить роль">🗑</Button>
                     </div>
                   </TableCell>
                 </TableRow>

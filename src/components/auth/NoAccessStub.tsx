@@ -33,8 +33,8 @@ export function NoAccessStub() {
             </ol>
           </div>
           <div className="flex gap-2 justify-center">
-            <Button variant="outline" onClick={logout}>Выйти</Button>
-            <Link href="/settings"><Button variant="default">Настройки</Button></Link>
+            <Button variant="outline" onClick={logout} title="Выйти из учётной записи">Выйти</Button>
+            <Link href="/settings"><Button variant="default" title="Перейти к настройкам профиля">Настройки</Button></Link>
           </div>
         </CardContent>
       </Card>

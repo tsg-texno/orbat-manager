@@ -113,7 +113,7 @@ export default function DashboardPage() {
             {missions.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <p className="mb-4">Нет миссий. Создайте первую.</p>
-                <Link href="/missions"><Button>Создать миссию</Button></Link>
+                <Link href="/missions"><Button title="Создать новую миссию">Создать миссию</Button></Link>
               </div>
             ) : (
               <ScrollArea className="max-h-[600px]">
@@ -199,7 +199,7 @@ export default function DashboardPage() {
                   <p className="text-muted-foreground">{m.date} — {m.squad} — {m.side === 'Красные' ? '🔴' : '🔵'} {m.ourFaction}</p>
                 </div>
               ))}
-              <Link href="/missions"><Button size="sm" variant="outline" className="w-full mt-2">Импортировать</Button></Link>
+              <Link href="/missions"><Button size="sm" variant="outline" className="w-full mt-2" title="Импортировать миссии из Google Sheets">Импортировать</Button></Link>
             </CardContent>
           </Card>
         )}
@@ -207,11 +207,11 @@ export default function DashboardPage() {
         <Card>
           <CardHeader><CardTitle>Быстрые действия</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <Link href="/missions"><Button className="w-full justify-start" variant="outline">📋 Управление миссиями</Button></Link>
-            <Link href="/specializations"><Button className="w-full justify-start" variant="outline">⭐ Управление специализациями</Button></Link>
-            <Link href="/vehicles"><Button className="w-full justify-start" variant="outline">🚁 Управление техникой</Button></Link>
-            <Link href="/settings"><Button className="w-full justify-start" variant="outline">⚙️ Настройки синхронизации</Button></Link>
-            <Link href="/roster"><Button className="w-full justify-start" variant="outline">📋 Ростер бойцов</Button></Link>
+            <Link href="/missions"><Button className="w-full justify-start" variant="outline" title="Перейти к списку миссий">📋 Управление миссиями</Button></Link>
+            <Link href="/specializations"><Button className="w-full justify-start" variant="outline" title="Перейти к управлению специализациями">⭐ Управление специализациями</Button></Link>
+            <Link href="/vehicles"><Button className="w-full justify-start" variant="outline" title="Перейти к управлению техникой">🚁 Управление техникой</Button></Link>
+            <Link href="/settings"><Button className="w-full justify-start" variant="outline" title="Перейти к настройкам приложения">⚙️ Настройки синхронизации</Button></Link>
+            <Link href="/roster"><Button className="w-full justify-start" variant="outline" title="Перейти к ростеру бойцов">📋 Ростер бойцов</Button></Link>
           </CardContent>
         </Card>
       </div>

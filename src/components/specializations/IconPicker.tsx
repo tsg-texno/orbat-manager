@@ -37,7 +37,7 @@ export function IconPicker({ value, onChange, icons }: IconPickerProps) {
           <Input placeholder="🔍 Поиск..." value={search} onChange={e => setSearch(e.target.value)} />
           <div className="flex gap-1 flex-wrap">
             {categories.map(c => (
-              <Button key={c} variant={category === c ? 'default' : 'outline'} size="sm" onClick={() => setCategory(c)}>{c}</Button>
+              <Button key={c} variant={category === c ? 'default' : 'outline'} size="sm" onClick={() => setCategory(c)} title={`Показать иконки категории ${c}`}>{c}</Button>
             ))}
           </div>
           <ScrollArea className="h-64">
@@ -49,6 +49,7 @@ export function IconPicker({ value, onChange, icons }: IconPickerProps) {
                   size="sm"
                   className="h-auto p-2 flex-col gap-1"
                   onClick={() => { onChange(icon.filename); setOpen(false); }}
+                  title={`Выбрать иконку ${icon.name}`}
                 >
                   <img src={`/icons/${icon.filename}`} alt={icon.name} className="w-[60px] h-10 object-contain" />
                   <span className="text-[10px] leading-tight text-center truncate w-full">{icon.name}</span>

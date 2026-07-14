@@ -143,7 +143,7 @@ export default function RosterPage() {
                 <Label>Вставьте данные (nickname,status,build,attendance%):</Label>
                 <Textarea rows={10} value={importText} onChange={e => setImportText(e.target.value)}
                   placeholder="Bazl,В строю,Sg,98%" />
-                <Button onClick={handleImport} className="w-full">Импортировать</Button>
+                <Button onClick={handleImport} className="w-full" title="Импортировать бойцов из CSV">Импортировать</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -163,7 +163,7 @@ export default function RosterPage() {
                     <option value="cadet">Курсант</option>
                   </select>
                 </div>
-                <Button onClick={handleAdd} className="w-full">Добавить</Button>
+                <Button onClick={handleAdd} className="w-full" title="Добавить нового бойца">Добавить</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -197,8 +197,8 @@ export default function RosterPage() {
                   <TableCell>{f.attendance}%</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" onClick={() => openEdit(f)}>✏️</Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(f.id)} className="text-destructive">🗑</Button>
+                      <Button variant="ghost" size="sm" onClick={() => openEdit(f)} title="Редактировать бойца">✏️</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(f.id)} className="text-destructive" title="Удалить бойца">🗑</Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -231,7 +231,7 @@ export default function RosterPage() {
             <div><Label>Явка (%)</Label>
               <Input value={editAttendance} onChange={e => setEditAttendance(e.target.value)} placeholder="98" />
             </div>
-            <Button onClick={handleEditSave} className="w-full">Сохранить</Button>
+            <Button onClick={handleEditSave} className="w-full" title="Сохранить изменения бойца">Сохранить</Button>
           </div>
         </DialogContent>
       </Dialog>

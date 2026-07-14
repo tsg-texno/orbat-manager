@@ -17,7 +17,7 @@ export function RequirePerm({ perm, children }: { perm: Permission | Permission[
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">У вашей учётной записи нет прав для просмотра этой страницы.</p>
-            <Link href="/"><Button variant="outline" size="sm">На дашборд</Button></Link>
+            <Link href="/"><Button variant="outline" size="sm" title="Вернуться на главную страницу">На дашборд</Button></Link>
           </CardContent>
         </Card>
       </div>

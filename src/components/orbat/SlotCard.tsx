@@ -158,7 +158,8 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
                 </SelectContent>
               </Select>
             ) : (
-              <Button variant="ghost" size="sm" className="h-8 text-xs px-2" onClick={() => setAssigning(true)}>
+              <Button variant="ghost" size="sm" className="h-8 text-xs px-2" onClick={() => setAssigning(true)}
+                title={occupant ? `Заменить бойца (${occupant.nickname})` : 'Назначить бойца в слот'}>
                 {occupant ? occupant.nickname : '✚'}
               </Button>
             )}
@@ -167,7 +168,8 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
 
         {occupant && !assigning && (
           <Button variant="ghost" size="sm" className="h-8 text-xs px-2 text-destructive"
-            onClick={() => updateSlot(missionId, groupId, slot.id, { occupiedBy: undefined, status: 'available' })}>
+            onClick={() => updateSlot(missionId, groupId, slot.id, { occupiedBy: undefined, status: 'available' })}
+            title="Снять бойца со слота">
             ✕
           </Button>
         )}

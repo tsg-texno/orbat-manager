@@ -87,7 +87,7 @@ export default function MissionsPage() {
         <h1 className="text-2xl font-bold">Миссии</h1>
         <RequireEdit perm="manage_missions">
         <Dialog open={open} onOpenChange={setOpen}>
-          <Button variant="outline" onClick={() => { setSheetOpen(true); loadSheet(); }}>
+          <Button variant="outline" onClick={() => { setSheetOpen(true); loadSheet(); }} title="Импортировать миссии из Google Sheets">
             📊 Из гугл-таблицы
           </Button>
           <DialogTrigger>+ Новая миссия</DialogTrigger>
@@ -123,7 +123,7 @@ export default function MissionsPage() {
                 </div>
               </div>
               <div><Label>Сервер</Label><Input type="number" value={server} onChange={e => setServer(Number(e.target.value))} /></div>
-              <Button onClick={handleCreate} className="w-full">Создать</Button>
+              <Button onClick={handleCreate} className="w-full" title="Создать новую миссию">Создать</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -153,9 +153,9 @@ export default function MissionsPage() {
                 <p className="text-sm text-muted-foreground mb-3">🎯 {m.slotGroups.reduce((a, g) => a + (g.slots || []).length, 0)} слотов</p>
                 <div className="flex gap-2">
                   <Link href={`/missions/${m.id}`} className="flex-1">
-                    <Button size="sm" variant="default" className="w-full">Открыть</Button>
+                    <Button size="sm" variant="default" className="w-full" title="Открыть миссию для редактирования состава">Открыть</Button>
                   </Link>
-                  <RequireEdit perm="manage_missions"><Button size="sm" variant="destructive" onClick={() => deleteMission(m.id)}>✕</Button></RequireEdit>
+                  <RequireEdit perm="manage_missions"><Button size="sm" variant="destructive" onClick={() => deleteMission(m.id)} title="Удалить миссию">✕</Button></RequireEdit>
                 </div>
               </CardContent>
             </Card>
@@ -192,7 +192,7 @@ export default function MissionsPage() {
                   </div>
                 </label>
               ))}
-              <Button onClick={importSelected} className="w-full" disabled={selected.size === 0}>
+              <Button onClick={importSelected} className="w-full" disabled={selected.size === 0} title="Импортировать выбранные миссии из таблицы">
                 Импортировать ({selected.size})
               </Button>
             </div>
