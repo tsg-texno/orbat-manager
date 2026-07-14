@@ -32,7 +32,7 @@ export default function MissionDetailPage() {
     const parsed = parseSlotText(pasteText);
     if (!parsed) return;
     const withSpecs = autoAssignSpecializations(parsed.slots, specializations, specializationAssociations);
-    const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name, undefined, specializations);
+    const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name, undefined, specializations, vehicleTypes);
     const deduped = [...new Set(matchedVehicleIds.filter(Boolean))];
     addSlotGroup(missionId, { ...parsed, slots: withVehicles, vehicleIds: deduped.length > 0 ? deduped : undefined });
     setPasteText('');
@@ -46,7 +46,7 @@ export default function MissionDetailPage() {
       const vehicleCounts = new Map<string, number>();
       for (const slot of allInGroup) {
         if (slot.vehicleManuallySet) continue;
-        const { slots: assigned } = autoAssignVehicles([slot], vehicleAssociations, group.name, undefined, specializations);
+        const { slots: assigned } = autoAssignVehicles([slot], vehicleAssociations, group.name, undefined, specializations, vehicleTypes);
         if (assigned[0].vehicleId !== slot.vehicleId) {
           updateSlot(missionId, group.id, slot.id, { vehicleId: assigned[0].vehicleId });
         }
@@ -81,28 +81,6 @@ export default function MissionDetailPage() {
     const current = group.vehicleIds || [];
     const next = [...current, vehicleId];
     updateSlotGroup(missionId, groupId, { vehicleIds: next });
-    // Auto-create missing crew slots
-    const vt = vehicleTypes.find(v => v.id === vehicleId);
-    if (vt && vt.crewSlots?.length) {
-      const newSlots = [...(group.slots || [])];
-      const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
-      let added = 0;
-      for (const crewTitle of vt.crewSlots) {
-        if (!existingTitles.has(crewTitle.toLowerCase())) {
-          newSlots.push({
-            id: generateId(),
-            title: crewTitle,
-            status: 'available',
-            vehicleId: vt.id,
-            vehicleManuallySet: true,
-          });
-          added++;
-        }
-      }
-      if (added > 0) {
-        updateSlotGroup(missionId, groupId, { vehicleIds: next, slots: newSlots, totalSlots: newSlots.length });
-      }
-    }
   };
 
   const removeGroupVehicle = (groupId: string, vehicleId: string, instanceIndex: number) => {

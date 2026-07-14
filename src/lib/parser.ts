@@ -79,20 +79,20 @@ export function autoAssignVehicles(
   associations: { id: string; slotPattern: string; vehicleTypeId: string; squadPattern?: string; dependsOnSlots?: string[] }[],
   squadName?: string,
   allSlots?: Slot[],
-  specializations?: { id: string; name: string }[]
+  specializations?: { id: string; name: string }[],
+  vehicleTypes?: { id: string; crewSlots?: string[] }[]
 ): { slots: Slot[]; matchedVehicleIds: string[] } {
   const matchedVehicleIds: string[] = [];
-  const result = slots.map((slot, idx) => {
+  const result = slots.map((slot) => {
     if (slot.vehicleManuallySet) { matchedVehicleIds.push(''); return slot; }
-    const match = associations.find(va => {
+    // Try explicit associations first
+    const assocMatch = associations.find(va => {
       try {
         const slotMatch = new RegExp(va.slotPattern, 'i').test(slot.title);
         if (!slotMatch) return false;
-        // squadPattern is insignificant — only slot pattern matters for match
         if (va.dependsOnSlots && va.dependsOnSlots.length > 0 && specializations) {
           const deps = allSlots || slots;
           const allDepMatch = va.dependsOnSlots.every(dp => {
-            // Check if any slot in the group has a specialization matching the dependency
             return deps.some(s => {
               if (!s.specializationId) return false;
               const spec = specializations.find(sp => sp.id === s.specializationId);
@@ -106,9 +106,22 @@ export function autoAssignVehicles(
         return slot.title.toLowerCase().includes(va.slotPattern.toLowerCase());
       }
     });
-    if (match) {
-      matchedVehicleIds.push(match.vehicleTypeId);
-      return { ...slot, vehicleId: match.vehicleTypeId };
+    if (assocMatch) {
+      matchedVehicleIds.push(assocMatch.vehicleTypeId);
+      return { ...slot, vehicleId: assocMatch.vehicleTypeId };
+    }
+    // Fallback: match slot title against vehicle crewSlots
+    if (vehicleTypes) {
+      const crewMatch = vehicleTypes.find(vt =>
+        vt.crewSlots?.some(cs => {
+          try { return new RegExp(cs, 'i').test(slot.title); }
+          catch { return slot.title.toLowerCase().includes(cs.toLowerCase()); }
+        })
+      );
+      if (crewMatch) {
+        matchedVehicleIds.push(crewMatch.id);
+        return { ...slot, vehicleId: crewMatch.id };
+      }
     }
     matchedVehicleIds.push('');
     return slot;
