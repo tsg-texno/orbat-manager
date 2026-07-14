@@ -168,11 +168,14 @@ export default function DashboardPage() {
                       </div>
                       {groupVehicles.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t">
+                          <span className="w-full text-xs text-muted-foreground font-medium mb-1">Приписанная техника:</span>
                           {groupVehicles.map((gv, i) => gv && (
-                            <div key={i} className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-muted/50">
-                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-[38px] h-[38px]" />}
-                              <span className="text-muted-foreground">{gv.groupName}:</span>
-                              <span className="font-medium">{gv.vt.name}</span>
+                            <div key={i} className="inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-blue-500/30 bg-blue-500/5 min-w-[140px]">
+                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-[48px] h-[32px]" />}
+                              <div className="flex flex-col leading-tight">
+                                <span className="text-sm font-medium">{gv.vt.name}</span>
+                                <span className="text-xs text-muted-foreground">{gv.groupName}</span>
+                              </div>
                             </div>
                           ))}
                         </div>

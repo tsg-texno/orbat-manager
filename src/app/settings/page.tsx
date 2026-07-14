@@ -209,8 +209,21 @@ export default function SettingsPage() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Синхронизация через Telegram</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Бэкап данных</CardTitle></CardHeader>
         <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">Все данные хранятся локально в браузере. Экспортируйте или импортируйте для переноса между устройствами.</p>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExport}>📤 Экспорт JSON</Button>
+            <Button variant="outline" onClick={handleImport}>📥 Импорт JSON</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>⚙ Синхронизация через Telegram (опционально)</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">Необязательно. Приложение полностью работает без синхронизации — все данные хранятся локально.</p>
+
           <div className="flex items-center justify-between">
             <div>
               <Label>Включить синхронизацию</Label>
@@ -260,33 +273,7 @@ export default function SettingsPage() {
           <div className="text-sm text-muted-foreground space-y-1 pt-4 border-t">
             <p>🟢 Статус: {isSyncConfigured() ? 'Настроен' : 'Не настроен'}</p>
             <p>🕐 Последняя синхронизация: {lastSyncTimestamp ? new Date(lastSyncTimestamp).toLocaleString() : 'никогда'}</p>
-            <p className="text-xs">Синхронизация через Telegram: данные передаются и забираются через личный чат с ботом каждые 15 секунд</p>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Бэкап данных</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">Экспортируйте или импортируйте все данные приложения</p>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExport}>📤 Экспорт JSON</Button>
-            <Button variant="outline" onClick={handleImport}>📥 Импорт JSON</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Инструкция по Telegram Bot</CardTitle></CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>1. Напишите <strong>@BotFather</strong> в Telegram</p>
-          <p>2. Отправьте <code>/newbot</code> и следуйте инструкциям</p>
-          <p>3. Скопируйте полученный токен и вставьте выше</p>
-          <p>4. Напишите вашему боту: <code>/start</code></p>
-          <p>5. Перешлите любое сообщение из бота в <strong>@userinfobot</strong>, чтобы узнать ваш Chat ID</p>
-          <p>6. Вставьте Chat ID выше</p>
-          <p>7. Данные будут синхронизироваться через личный чат с ботом</p>
-          <p className="text-yellow-500 mt-2">⚠ Diff-синхронизация: передаются только изменения (не весь файл)</p>
         </CardContent>
       </Card>
     </div>

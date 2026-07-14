@@ -52,11 +52,10 @@ export function SyncStatus() {
     }
   };
 
-  if (!syncEnabled) return null;
+  if (!syncEnabled || !configured) return null;
 
   const statusIcon = () => {
     if (offlineMode) return { icon: '🔴', label: 'Офлайн' };
-    if (!configured) return { icon: '⚪', label: 'Не настроен' };
     if (status === 'syncing') return { icon: '🔄', label: 'Синхронизация...' };
     if (status === 'synced') return { icon: '🟢', label: 'Синхронизировано' };
     if (status === 'error') return { icon: '🔴', label: 'Ошибка' };
@@ -73,15 +72,14 @@ export function SyncStatus() {
           size="sm"
           className="text-xs gap-1"
           onClick={handleSync}
-          disabled={syncing || !configured}
+          disabled={syncing}
         >
           <span>{icon}</span>
-          {!configured ? 'Настройка' : label}
+          {label}
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        {!configured ? 'Настройте Telegram бота в настройках' :
-         offlineMode ? 'Офлайн режим. Изменения копятся локально.' :
+        {offlineMode ? 'Офлайн режим. Изменения копятся локально.' :
          `Последняя синхронизация: ${new Date(lastSyncTimestamp).toLocaleTimeString()}`}
       </TooltipContent>
     </Tooltip>
