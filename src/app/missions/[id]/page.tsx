@@ -33,7 +33,8 @@ export default function MissionDetailPage() {
     if (!parsed) return;
     const withSpecs = autoAssignSpecializations(parsed.slots, specializations, specializationAssociations);
     const { slots: withVehicles, matchedVehicleIds } = autoAssignVehicles(withSpecs, vehicleAssociations, parsed.name, undefined, specializations);
-    addSlotGroup(missionId, { ...parsed, slots: withVehicles, vehicleIds: matchedVehicleIds });
+    const deduped = [...new Set(matchedVehicleIds.filter(Boolean))];
+    addSlotGroup(missionId, { ...parsed, slots: withVehicles, vehicleIds: deduped.length > 0 ? deduped : undefined });
     setPasteText('');
     setPasteOpen(false);
   };
@@ -42,18 +43,23 @@ export default function MissionDetailPage() {
     if (!mission) return;
     for (const group of mission.slotGroups) {
       const allInGroup = group.slots || [];
-      const { matchedVehicleIds } = autoAssignVehicles(allInGroup, vehicleAssociations, group.name, undefined, specializations);
+      const vehicleCounts = new Map<string, number>();
       for (const slot of allInGroup) {
         if (slot.vehicleManuallySet) continue;
         const { slots: assigned } = autoAssignVehicles([slot], vehicleAssociations, group.name, undefined, specializations);
         if (assigned[0].vehicleId !== slot.vehicleId) {
           updateSlot(missionId, group.id, slot.id, { vehicleId: assigned[0].vehicleId });
         }
+        if (assigned[0].vehicleId) {
+          vehicleCounts.set(assigned[0].vehicleId, (vehicleCounts.get(assigned[0].vehicleId) || 0) + 1);
+        }
       }
-      const updated = [...(group.vehicleIds || []), ...matchedVehicleIds];
-      if (matchedVehicleIds.length > 0) {
-        updateSlotGroup(missionId, group.id, { vehicleIds: updated });
+      // Build vehicleIds with exact counts from matched slots
+      const newVehicleIds: string[] = [];
+      for (const [vid, count] of vehicleCounts) {
+        for (let i = 0; i < count; i++) newVehicleIds.push(vid);
       }
+      updateSlotGroup(missionId, group.id, { vehicleIds: newVehicleIds.length > 0 ? newVehicleIds : undefined });
     }
   };
 

@@ -81,9 +81,9 @@ export function autoAssignVehicles(
   allSlots?: Slot[],
   specializations?: { id: string; name: string }[]
 ): { slots: Slot[]; matchedVehicleIds: string[] } {
-  const matchedVehicleIds = new Set<string>();
+  const matchedVehicleIds: string[] = [];
   const result = slots.map((slot, idx) => {
-    if (slot.vehicleManuallySet) return slot;
+    if (slot.vehicleManuallySet) { matchedVehicleIds.push(''); return slot; }
     const match = associations.find(va => {
       try {
         const slotMatch = new RegExp(va.slotPattern, 'i').test(slot.title);
@@ -107,10 +107,11 @@ export function autoAssignVehicles(
       }
     });
     if (match) {
-      matchedVehicleIds.add(match.vehicleTypeId);
+      matchedVehicleIds.push(match.vehicleTypeId);
       return { ...slot, vehicleId: match.vehicleTypeId };
     }
+    matchedVehicleIds.push('');
     return slot;
   });
-  return { slots: result, matchedVehicleIds: Array.from(matchedVehicleIds) };
+  return { slots: result, matchedVehicleIds };
 }
