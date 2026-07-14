@@ -35,6 +35,7 @@ export default function DashboardPage() {
     acc + m.slotGroups.reduce((sgAcc, sg) =>
       sgAcc + sg.slots.filter(s => s.status === 'taken_by_us').length, 0), 0);
 
+  const vehicleTypes = useAppStore(s => s.vehicleTypes);
   const missionSpecStats = missions.map(m => {
     const allSlots = m.slotGroups.flatMap(g => g.slots);
     const specCounts = new Map<string, { name: string; icon: string; count: number }>();
@@ -49,7 +50,12 @@ export default function DashboardPage() {
         noSpec++;
       }
     }
-    return { mission: m, specs: Array.from(specCounts.values()), noSpec };
+    const groupVehicles = m.slotGroups.map(g => {
+      if (!g.vehicleId) return null;
+      const vt = vehicleTypes.find(v => v.id === g.vehicleId);
+      return vt ? { groupName: g.name, vt } : null;
+    }).filter(Boolean);
+    return { mission: m, specs: Array.from(specCounts.values()), noSpec, groupVehicles };
   });
 
   return (
@@ -93,7 +99,7 @@ export default function DashboardPage() {
             ) : (
               <ScrollArea className="max-h-[400px]">
                 <div className="space-y-3">
-                  {missionSpecStats.map(({ mission: m, specs, noSpec }) => (
+                  {missionSpecStats.map(({ mission: m, specs, noSpec, groupVehicles }) => (
                     <Link key={m.id} href={`/missions/${m.id}`}
                       className="block p-3 rounded-lg border hover:bg-accent transition-colors">
                       <div className="flex items-center justify-between mb-1.5">
@@ -102,18 +108,28 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {specs.map((sp, i) => (
-                          <Badge key={i} variant="secondary" className="text-xs px-1.5 py-0.5 gap-1">
-                            {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-4 h-4" />}
+                          <Badge key={i} variant="secondary" className="text-sm px-2 py-1 gap-1.5">
+                            {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-5 h-5" />}
                             {sp.name}
                             <span className="text-muted-foreground ml-0.5">×{sp.count}</span>
                           </Badge>
                         ))}
                         {noSpec > 0 && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                          <Badge variant="outline" className="text-sm px-2 py-1">
                             ? ×{noSpec}
                           </Badge>
                         )}
                       </div>
+                      {groupVehicles.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t">
+                          {groupVehicles.map((gv, i) => gv && (
+                            <Badge key={i} variant="outline" className="text-xs px-1.5 py-0.5 gap-1">
+                              {gv.vt.icon && <img src={`/icons/${gv.vt.icon}`} alt="" className="w-5 h-5" />}
+                              {gv.groupName}: {gv.vt.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </Link>
                   ))}
                 </div>

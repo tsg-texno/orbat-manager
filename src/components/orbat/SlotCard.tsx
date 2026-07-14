@@ -82,8 +82,8 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
           {spec && (
             <Tooltip>
               <TooltipTrigger className="cursor-help inline-flex items-center">
-                <Badge variant="secondary" className="text-xs px-1.5 py-0.5 h-5 gap-1">
-                  {spec.icon && <img src={`/icons/${spec.icon}`} alt="" className="w-4 h-4 inline-block" />}
+                <Badge variant="secondary" className="text-sm px-2 py-1 h-7 gap-1.5">
+                  {spec.icon && <img src={`/icons/${spec.icon}`} alt="" className="w-6 h-6 inline-block" />}
                   {spec.name}
                 </Badge>
               </TooltipTrigger>
@@ -100,7 +100,7 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
               <SelectItem value="none">— Без специ —</SelectItem>
               {specializations.map(s => (
                 <SelectItem key={s.id} value={s.id} className="text-xs">
-                  {s.icon && <img src={`/icons/${s.icon}`} alt="" className="w-3.5 h-3.5 inline-block mr-1" />}
+                  {s.icon && <img src={`/icons/${s.icon}`} alt="" className="w-5 h-5 inline-block mr-1" />}
                   {s.name}
                 </SelectItem>
               ))}
@@ -113,9 +113,9 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
         <Tooltip>
           <TooltipTrigger className="inline-flex items-center" onClick={() => setVehicleOpen(true)}>
             {vehicle ? (
-              <img src={`/icons/${vehicle.icon}`} alt="" className="w-5 h-5 cursor-pointer" />
+              <img src={`/icons/${vehicle.icon}`} alt="" className="w-8 h-8 cursor-pointer" />
             ) : (
-              <span className="text-sm cursor-pointer text-muted-foreground">🚁</span>
+              <span className="w-8 h-8 rounded border border-dashed border-muted-foreground inline-block cursor-pointer" />
             )}
           </TooltipTrigger>
           {vehicle && (
@@ -135,7 +135,7 @@ export function SlotCard({ slot, missionId, groupId, fighters, specializations, 
               <SelectItem value="none">— Без техники —</SelectItem>
               {vehicleTypes.map(v => (
                 <SelectItem key={v.id} value={v.id} className="text-xs">
-                  {v.icon && <img src={`/icons/${v.icon}`} alt="" className="w-4 h-4 inline-block mr-1" />}
+                  {v.icon && <img src={`/icons/${v.icon}`} alt="" className="w-6 h-6 inline-block mr-1" />}
                   {v.name}
                 </SelectItem>
               ))}

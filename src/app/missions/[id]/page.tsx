@@ -20,7 +20,7 @@ export default function MissionDetailPage() {
   const params = useParams();
   const missionId = params.id as string;
   const mission = useAppStore(s => s.missions.find(m => m.id === missionId));
-  const { addSlotGroup, removeSlotGroup, updateSlot, updateMission, addVehicleAssociation, fighters, specializations, vehicleTypes, vehicleAssociations } = useAppStore();
+  const { addSlotGroup, removeSlotGroup, updateSlotGroup, updateSlot, updateMission, addVehicleAssociation, fighters, specializations, vehicleTypes, vehicleAssociations } = useAppStore();
 
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
@@ -57,6 +57,42 @@ export default function MissionDetailPage() {
   const available = allSlots.filter(s => s.status === 'available').length;
   const reserve = allSlots.filter(s => s.status === 'reserve').length;
   const occupied = allSlots.filter(s => s.status === 'occupied_by_others').length;
+
+  const handleGroupVehicle = (groupId: string, vehicleId: string | undefined) => {
+    const group = mission?.slotGroups.find(g => g.id === groupId);
+    if (!group) return;
+    const vt = vehicleTypes.find(v => v.id === vehicleId);
+    if (!vt) {
+      updateSlotGroup(missionId, groupId, { vehicleId: undefined });
+      return;
+    }
+    // Add missing crew slots
+    const newSlots = [...group.slots];
+    const existingTitles = new Map(newSlots.map(s => [s.title.toLowerCase(), s]));
+    let added = 0;
+    for (const crewTitle of (vt.crewSlots || [])) {
+      if (!existingTitles.has(crewTitle.toLowerCase())) {
+        newSlots.push({
+          id: generateId(),
+          title: crewTitle,
+          status: 'available',
+          vehicleId: vt.id,
+          vehicleManuallySet: true,
+        });
+        added++;
+      }
+    }
+    updateSlotGroup(missionId, groupId, { vehicleId: vt.id, slots: added > 0 ? newSlots : undefined, totalSlots: added > 0 ? newSlots.length : group.totalSlots });
+    if (added > 0 && !group.vehicleId) {
+      // Also add vehicle slots via autoAssign for existing matching slots
+      const updated = autoAssignVehicles(newSlots, vehicleAssociations, group.name);
+      for (let i = 0; i < updated.length; i++) {
+        if (updated[i].vehicleId !== group.slots[i]?.vehicleId) {
+          updateSlot(missionId, groupId, updated[i].id, { vehicleId: updated[i].vehicleId });
+        }
+      }
+    }
+  };
 
   if (!mission) return (
     <div className="text-center py-12">
@@ -114,14 +150,38 @@ export default function MissionDetailPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {mission.slotGroups.map(group => (
+          {mission.slotGroups.map(group => {
+            const groupVt = group.vehicleId ? vehicleTypes.find(v => v.id === group.vehicleId) : null;
+            return (
             <Card key={group.id}>
               <CardHeader className="pb-2 flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-base flex items-center gap-2">
+                  {groupVt?.icon && <img src={`/icons/${groupVt.icon}`} alt="" className="w-7 h-7" />}
                   {group.name}
                   <Badge variant="secondary" className="text-xs">{group.slots.length} слотов</Badge>
                 </CardTitle>
                 <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 mr-2">
+                    <Select value={group.vehicleId || 'none'} onValueChange={(v) => handleGroupVehicle(group.id, v === 'none' ? '' : v || '')}>
+                      <SelectTrigger className="h-7 text-[11px] w-auto max-w-[140px]">
+                        <SelectValue placeholder="Техника отд." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">— Нет техники —</SelectItem>
+                        {vehicleTypes.map(vt => (
+                          <SelectItem key={vt.id} value={vt.id} className="text-xs">
+                            {vt.icon && <img src={`/icons/${vt.icon}`} alt="" className="w-4 h-4 inline-block mr-1" />}
+                            {vt.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {groupVt && (
+                      <span className="text-[10px] text-muted-foreground">
+                        {groupVt.crewSlots?.length ? `👤×${groupVt.crewSlots.length}` : ''}
+                      </span>
+                    )}
+                  </div>
                   <Button size="sm" variant="outline" className="h-7 text-[11px] px-2"
                     onClick={() => {
                       let added = 0;
@@ -165,7 +225,8 @@ export default function MissionDetailPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

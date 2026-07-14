@@ -31,6 +31,7 @@ interface AppStore extends AppState {
   deleteMission: (id: string) => void;
   addSlotGroup: (missionId: string, group: SlotGroup) => void;
   removeSlotGroup: (missionId: string, groupId: string) => void;
+  updateSlotGroup: (missionId: string, groupId: string, data: Partial<SlotGroup>) => void;
   updateSlot: (missionId: string, groupId: string, slotId: string, data: Partial<SlotGroup['slots'][0]>) => void;
   addRole: (role: Omit<Role, 'id'>) => void;
   updateRole: (id: string, data: Partial<Role>) => void;
@@ -88,6 +89,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
   }),
   removeSlotGroup: (missionId, groupId) => set((s) => {
     const missions = s.missions.map(m => m.id === missionId ? { ...m, slotGroups: m.slotGroups.filter(g => g.id !== groupId), updatedAt: Date.now() } : m);
+    saveToStorage('missions', missions); return { missions };
+  }),
+  updateSlotGroup: (missionId, groupId, data) => set((s) => {
+    const missions = s.missions.map(m => m.id === missionId ? {
+      ...m, slotGroups: m.slotGroups.map(g => g.id === groupId ? { ...g, ...data } : g), updatedAt: Date.now()
+    } : m);
     saveToStorage('missions', missions); return { missions };
   }),
   updateSlot: (missionId, groupId, slotId, data) => set((s) => {

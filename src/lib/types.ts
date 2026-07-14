@@ -59,6 +59,7 @@ export interface SlotGroup {
   totalSlots: number;
   slots: Slot[];
   squadType?: string;
+  vehicleId?: string;
 }
 
 export interface Slot {
@@ -92,6 +93,7 @@ export interface VehicleType {
   category: string;
   icon: string;
   matchPatterns: string[];
+  crewSlots?: string[];
 }
 
 export interface VehicleAssociation {
