@@ -37,17 +37,18 @@ export default function DashboardPage() {
 
   const vehicleTypes = useAppStore(s => s.vehicleTypes);
   const missionSpecStats = missions.map(m => {
-    const allSlots = m.slotGroups.flatMap(g => g.slots);
-    const specCounts = new Map<string, { name: string; icon: string; count: number }>();
-    let noSpec = 0;
-    for (const s of allSlots) {
+    const claimableSlots = m.slotGroups.flatMap(g => g.slots).filter(s => s.status !== 'reserve' && s.status !== 'occupied_by_others');
+    const specCounts = new Map<string, { name: string; icon: string; total: number; filled: number }>();
+    let noSpecTotal = 0, noSpecFilled = 0;
+    for (const s of claimableSlots) {
       if (s.specializationId) {
         const sp = specializations.find(sp => sp.id === s.specializationId);
         const key = s.specializationId;
-        const prev = specCounts.get(key) || { name: sp?.name || '?', icon: sp?.icon || '', count: 0 };
-        specCounts.set(key, { ...prev, count: prev.count + 1 });
+        const prev = specCounts.get(key) || { name: sp?.name || '?', icon: sp?.icon || '', total: 0, filled: 0 };
+        specCounts.set(key, { ...prev, total: prev.total + 1, filled: prev.filled + (s.status === 'taken_by_us' ? 1 : 0) });
       } else {
-        noSpec++;
+        noSpecTotal++;
+        if (s.status === 'taken_by_us') noSpecFilled++;
       }
     }
     const groupVehicles = m.slotGroups.map(g => {
@@ -55,7 +56,7 @@ export default function DashboardPage() {
       const vt = vehicleTypes.find(v => v.id === g.vehicleId);
       return vt ? { groupName: g.name, vt } : null;
     }).filter(Boolean);
-    return { mission: m, specs: Array.from(specCounts.values()), noSpec, groupVehicles };
+    return { mission: m, specs: Array.from(specCounts.values()), noSpecTotal, noSpecFilled, groupVehicles };
   });
 
   return (
@@ -75,7 +76,22 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Всего слотов</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-bold">{totalSlots}</p></CardContent>
+          <CardContent>
+            <p className="text-3xl font-bold">{totalSlots}</p>
+            <div className="mt-2 space-y-0.5 text-xs text-muted-foreground">
+              {missions.map(m => {
+                const slots = m.slotGroups.flatMap(g => g.slots);
+                const taken = slots.filter(s => s.status === 'taken_by_us').length;
+                const claimable = slots.filter(s => s.status !== 'reserve' && s.status !== 'occupied_by_others').length;
+                return (
+                  <div key={m.id} className="flex justify-between">
+                    <span className="truncate">{m.name}</span>
+                    <span className="ml-2 shrink-0">{taken}/{claimable}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Занято</CardTitle></CardHeader>
@@ -99,7 +115,16 @@ export default function DashboardPage() {
             ) : (
               <ScrollArea className="max-h-[400px]">
                 <div className="space-y-3">
-                  {missionSpecStats.map(({ mission: m, specs, noSpec, groupVehicles }) => (
+                  {missionSpecStats.map(({ mission: m, specs, noSpecTotal, noSpecFilled, groupVehicles }) => {
+                    const ratio = (t: number, f: number) => f / t || 0;
+                    const occColor = (t: number, f: number) => {
+                      if (t === 0) return 'text-muted-foreground';
+                      const r = f / t;
+                      if (r < 0.33) return 'text-red-500';
+                      if (r < 0.67) return 'text-yellow-500';
+                      return 'text-green-500';
+                    };
+                    return (
                     <Link key={m.id} href={`/missions/${m.id}`}
                       className="block p-3 rounded-lg border hover:bg-accent transition-colors">
                       <div className="flex items-center justify-between mb-1.5">
@@ -108,15 +133,15 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {specs.map((sp, i) => (
-                          <Badge key={i} variant="secondary" className="text-sm px-2 py-1 gap-1.5">
+                          <Badge key={i} variant="secondary" className={`text-sm px-2 py-1 gap-1.5 ${occColor(sp.total, sp.filled)}`}>
                             {sp.icon && <img src={`/icons/${sp.icon}`} alt="" className="w-5 h-5" />}
                             {sp.name}
-                            <span className="text-muted-foreground ml-0.5">×{sp.count}</span>
+                            <span className="ml-0.5 font-semibold">{sp.filled}/{sp.total}</span>
                           </Badge>
                         ))}
-                        {noSpec > 0 && (
-                          <Badge variant="outline" className="text-sm px-2 py-1">
-                            ? ×{noSpec}
+                        {noSpecTotal > 0 && (
+                          <Badge variant="outline" className={`text-sm px-2 py-1 ${occColor(noSpecTotal, noSpecFilled)}`}>
+                            ? <span className="ml-0.5 font-semibold">{noSpecFilled}/{noSpecTotal}</span>
                           </Badge>
                         )}
                       </div>
@@ -131,7 +156,8 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               </ScrollArea>
             )}
