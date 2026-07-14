@@ -17,8 +17,9 @@ export function RedisStatus() {
           setStatus('connected');
           setError('');
         } else {
+          const body = await resp.json().catch(() => ({}));
           setStatus('disconnected');
-          setError(`HTTP ${resp.status}`);
+          setError(body?.error || `HTTP ${resp.status}`);
         }
       } catch (e) {
         if (cancelled) return;
