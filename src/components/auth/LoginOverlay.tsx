@@ -30,15 +30,12 @@ export function LoginOverlay() {
     registerUser(regName.trim(), regPin);
   };
 
-  const isFirst = users.length === 0;
-
   if (!registering) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
         <Card className="w-full max-w-sm mx-4">
           <CardHeader className="text-center">
             <CardTitle className="text-xl">ORBAT Manager</CardTitle>
-            {isFirst && <p className="text-sm text-muted-foreground mt-1">Создайте первую учётную запись администратора</p>}
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -50,7 +47,7 @@ export function LoginOverlay() {
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button className="w-full" onClick={handleLogin} title="Войти в приложение по ПИН-коду">Войти</Button>
             <Button variant="link" className="w-full text-sm" onClick={() => { setRegistering(true); setError(''); }}>
-              {isFirst ? 'Создать учётную запись' : 'Нет аккаунта? Зарегистрироваться'}
+              Нет аккаунта? Зарегистрироваться
             </Button>
           </CardContent>
         </Card>
@@ -62,7 +59,7 @@ export function LoginOverlay() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
       <Card className="w-full max-w-sm mx-4">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">{isFirst ? 'Создание администратора' : 'Регистрация'}</CardTitle>
+          <CardTitle className="text-xl">Регистрация</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -78,7 +75,7 @@ export function LoginOverlay() {
             <Input type="password" value={regPin2} onChange={e => setRegPin2(e.target.value)} placeholder="Повторите" />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button className="w-full" onClick={handleRegister} title={isFirst ? 'Создать учётную запись администратора' : 'Зарегистрировать нового пользователя'}>{isFirst ? 'Создать' : 'Зарегистрироваться'}</Button>
+          <Button className="w-full" onClick={handleRegister} title="Зарегистрировать нового пользователя">Зарегистрироваться</Button>
           <Button variant="link" className="w-full text-sm" onClick={() => { setRegistering(false); setError(''); }}>
             Назад к входу
           </Button>
